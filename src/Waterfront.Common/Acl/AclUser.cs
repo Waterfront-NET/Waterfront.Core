@@ -1,9 +1,11 @@
-﻿namespace Waterfront.Common.Acl;
+﻿using System.Collections.Generic;
+
+namespace Waterfront.Common.Acl;
 
 public class AclUser
 {
     /// <summary>
-    /// User name
+    /// User's identifier. Should not be empty or duplicated, or unexpected behaviour is to be expected
     /// </summary>
     public string Username { get; }
 

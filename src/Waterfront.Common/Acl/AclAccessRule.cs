@@ -1,4 +1,6 @@
-﻿namespace Waterfront.Common.Acl;
+﻿using System.Collections.Generic;
+
+namespace Waterfront.Common.Acl;
 
 public class AclAccessRule
 {

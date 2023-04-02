@@ -1,4 +1,5 @@
-﻿using Waterfront.Common.Credentials;
+﻿using System.Collections.Generic;
+using Waterfront.Common.Credentials;
 
 namespace Waterfront.Common.Tokens;
 
