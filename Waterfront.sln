@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Core", "src\Wate
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Common", "src\Waterfront.Common\Waterfront.Common.csproj", "{EC6747FD-97B2-4ECD-9F51-7E81CAF85646}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Acl.Static", "src\Waterfront.Acl.Static\Waterfront.Acl.Static.csproj", "{172B52B5-F1BE-46BB-AB54-C5FD6714C363}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Acl.Static.Models", "src\Waterfront.Acl.Static.Models\Waterfront.Acl.Static.Models.csproj", "{4736C15E-BF56-4160-B5E3-C2E5EEE53B05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.AspNetCore", "src\Waterfront.AspNetCore\Waterfront.AspNetCore.csproj", "{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +30,17 @@ Global
 		{EC6747FD-97B2-4ECD-9F51-7E81CAF85646}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC6747FD-97B2-4ECD-9F51-7E81CAF85646}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC6747FD-97B2-4ECD-9F51-7E81CAF85646}.Release|Any CPU.Build.0 = Release|Any CPU
+		{172B52B5-F1BE-46BB-AB54-C5FD6714C363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{172B52B5-F1BE-46BB-AB54-C5FD6714C363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{172B52B5-F1BE-46BB-AB54-C5FD6714C363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{172B52B5-F1BE-46BB-AB54-C5FD6714C363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4736C15E-BF56-4160-B5E3-C2E5EEE53B05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4736C15E-BF56-4160-B5E3-C2E5EEE53B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4736C15E-BF56-4160-B5E3-C2E5EEE53B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4736C15E-BF56-4160-B5E3-C2E5EEE53B05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
