@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Waterfront.AspNetCore.Extensions;
 using Waterfront.Core;
 using Waterfront.Core.Authentication;
@@ -23,7 +24,7 @@ public class WaterfrontBuilder
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     ) where TProvider : ITokenCertificateProvider
     {
-        var descriptor = ServiceDescriptor.Describe(
+        ServiceDescriptor descriptor = ServiceDescriptor.Describe(
             typeof(ITokenCertificateProvider),
             typeof(TProvider),
             lifetime
@@ -37,14 +38,15 @@ public class WaterfrontBuilder
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     ) where TProvider : TokenCertificateProvider<TOptions> where TOptions : class
     {
-        var descriptor = ServiceDescriptor.Describe(
+        ServiceDescriptor descriptor = ServiceDescriptor.Describe(
             typeof(ITokenCertificateProvider),
             typeof(TProvider),
             lifetime
         );
         _services.TryAdd(descriptor);
-        _services.AddOptions<TOptions>().Configure(configureOptions);
-
+        _services.AddSingleton<IConfigureOptions<TOptions>>(
+            new ConfigureNamedOptions<TOptions>(Options.DefaultName, configureOptions)
+        );
         return this;
     }
 
@@ -60,7 +62,9 @@ public class WaterfrontBuilder
     ) where TService : AclAuthenticationService<TOptions> where TOptions : class
     {
         _services.AddScoped<IAclAuthenticationService, TService>();
-        _services.AddOptions<TOptions>().Configure(configureOptions);
+        _services.AddSingleton<IConfigureOptions<TOptions>>(
+            new ConfigureNamedOptions<TOptions>(Options.DefaultName, configureOptions)
+        );
         return this;
     }
 
@@ -76,13 +80,17 @@ public class WaterfrontBuilder
     ) where TService : AclAuthorizationService<TOptions> where TOptions : class
     {
         _services.AddScoped<IAclAuthorizationService, TService>();
-        _services.AddOptions<TOptions>().Configure(configureOptions);
+        _services.AddSingleton<IConfigureOptions<TOptions>>(
+            new ConfigureNamedOptions<TOptions>(Options.DefaultName, configureOptions)
+        );
         return this;
     }
 
     public WaterfrontBuilder ConfigureTokenOptions(Action<TokenOptions> configureOptions)
     {
-        _services.AddOptions<TokenOptions>().Configure(configureOptions);
+        _services.AddSingleton<IConfigureOptions<TokenOptions>>(
+            new ConfigureNamedOptions<TokenOptions>(Options.DefaultName, configureOptions)
+        );
         return this;
     }
 }

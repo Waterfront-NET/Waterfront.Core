@@ -23,7 +23,7 @@ builder.Services.AddOptions<StaticAclOptions>().Configure(
         options.Users = new[] {
             new StaticAclUser {
                 Username = "localhostUser",
-                Ip = "127.0.0.1:*",
+                Ip       = "127.0.0.1:*",
                 Acl      = new[] { "default" }
             },
             new StaticAclUser {
@@ -38,9 +38,9 @@ builder.Services.AddOptions<StaticAclOptions>().Configure(
                 Name = "Default",
                 Access = new[] {
                     new StaticAclPolicyAccessRule {
-                        Name = "catalog",
+                        Name = "*",
                         Actions =
-                        new[] { "pull", "push" },
+                        new[] { "pull" },
                         Type = "repository"
                     }
                 }

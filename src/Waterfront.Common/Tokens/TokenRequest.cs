@@ -5,7 +5,7 @@ using Waterfront.Common.Credentials;
 
 namespace Waterfront.Common.Tokens;
 
-public class TokenRequest
+public readonly struct TokenRequest
 {
     public string Id { get; }
     public string Service { get; }

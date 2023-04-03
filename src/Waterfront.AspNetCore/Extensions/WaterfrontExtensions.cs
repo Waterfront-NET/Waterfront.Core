@@ -20,6 +20,8 @@ public static class WaterfrontExtensions
 
     public static IServiceCollection AddWaterfrontCore(this IServiceCollection services)
     {
+        services.AddOptions();
+        
         services.TryAddScoped<ITokenRequestCreationService, TokenRequestCreationService>();
         services.TryAddScoped<ITokenResponseCreationService, TokenResponseCreationService>();
         services.TryAddScoped<ITokenCreationService, TokenCreationService>();
