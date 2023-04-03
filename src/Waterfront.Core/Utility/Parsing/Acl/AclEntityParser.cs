@@ -1,4 +1,5 @@
-﻿using Sprache;
+﻿using System.Collections.Generic;
+using Sprache;
 using Waterfront.Common.Acl;
 using Waterfront.Common.Tokens;
 

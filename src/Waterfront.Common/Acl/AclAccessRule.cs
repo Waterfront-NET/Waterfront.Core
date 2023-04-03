@@ -4,7 +4,7 @@ namespace Waterfront.Common.Acl;
 
 public class AclAccessRule
 {
-    public AclResourceType Type { get; }
-    public string Name { get; }
-    public IEnumerable<AclResourceAction> Actions { get; }
+    public AclResourceType Type { get; init; }
+    public string Name { get; init; }
+    public IEnumerable<AclResourceAction> Actions { get; init; }
 }
