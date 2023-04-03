@@ -6,38 +6,36 @@ using Waterfront.Common.Acl;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
+using Waterfront.Core.Authorization;
 using Waterfront.Core.Utility.Matching;
 using Waterfront.Core.Utility.Serialization.Acl;
 
 namespace Waterfront.Acl.Static;
 
-public class StaticAclAuthorizationService : IAclAuthorizationService
+public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOptions>
 {
-    private readonly ILogger<StaticAclAuthorizationService> _logger;
-    private readonly IOptions<StaticAclOptions>             _options;
-
     public StaticAclAuthorizationService(
-        ILogger<StaticAclAuthorizationService> logger,
+        ILoggerFactory loggerFactory,
         IOptions<StaticAclOptions> options
-    )
-    {
-        _logger  = logger;
-        _options = options;
-    }
+    ) : base(loggerFactory, options) { }
 
-    public ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
+    public override ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
         AclUser user
     )
     {
-        _logger.LogInformation("Authorizing request {RequestId}", request.Id);
+        Logger.LogInformation("Authorizing request {RequestId}", request.Id);
 
         List<TokenRequestScope> authorizedScopes = new List<TokenRequestScope>();
         List<TokenRequestScope> forbiddenScopes  = new List<TokenRequestScope>();
 
+        var policies = Options.Value.Acl.Where(
+            p => user.Acl.Contains(p.Name, StringComparer.OrdinalIgnoreCase)
+        );
+
         foreach (TokenRequestScope scope in request.Scopes)
         {
-            foreach (StaticAclPolicy policy in _options.Value.Acl)
+            foreach (StaticAclPolicy policy in policies)
             {
                 if (TryAuthorize(scope, policy))
                 {

@@ -22,7 +22,7 @@ public static class QueryParamResolver
             return false;
         }
 
-        service = string.Empty;
+        service = query["service"].First();
 
         if (query.ContainsKey("account"))
         {

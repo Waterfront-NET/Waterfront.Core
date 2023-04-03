@@ -13,10 +13,10 @@ public record ConnectionCredentials(IPAddress IP, int Port)
     public string ToString(bool includePort)
     {
         var strIp = IP.ToString();
-        
+
         if (includePort)
         {
-            return string.Concat(strIp, Port.ToString());
+            return string.Concat(strIp, ":", Port.ToString());
         }
 
         return strIp;

@@ -9,10 +9,11 @@
     <ItemGroup>
         <ProjectReference Include="..\Waterfront.Common\Waterfront.Common.csproj" />
         <ProjectReference Include="..\Waterfront.Core\Waterfront.Core.csproj" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
+<!--        <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />-->
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />

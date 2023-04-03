@@ -34,19 +34,14 @@ public class TokenRequest
         RefreshTokenCredentials? refreshTokenCredentials
     )
     {
-        if (string.IsNullOrEmpty(Id))
+        if (string.IsNullOrEmpty(id))
         {
             throw new ArgumentNullException(nameof(id));
         }
 
-        if (string.IsNullOrEmpty(Service))
+        if (string.IsNullOrEmpty(service))
         {
             throw new ArgumentNullException(nameof(service));
-        }
-
-        if (ConnectionCredentials == null)
-        {
-            throw new ArgumentNullException(nameof(connectionCredentials));
         }
 
         Id = id;
@@ -56,7 +51,7 @@ public class TokenRequest
         OfflineToken = offlineToken;
         Scopes = scopes ?? Array.Empty<TokenRequestScope>();
         BasicCredentials = basicCredentials;
-        ConnectionCredentials = connectionCredentials;
+        ConnectionCredentials = connectionCredentials ?? throw new ArgumentNullException(nameof(connectionCredentials));
         RefreshTokenCredentials = refreshTokenCredentials;
     }
 }

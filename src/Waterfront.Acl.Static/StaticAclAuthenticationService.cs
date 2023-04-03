@@ -10,30 +10,25 @@ using Waterfront.Core.Utility.Matching;
 
 namespace Waterfront.Acl.Static;
 
-public class StaticAclAuthenticationService : IAclAuthenticationService
+public class StaticAclAuthenticationService : AclAuthenticationService<StaticAclOptions>
 {
-    private readonly ILogger<StaticAclAuthenticationService> _logger;
-    private readonly IOptions<StaticAclOptions>              _options;
-
     public StaticAclAuthenticationService(
-        ILogger<StaticAclAuthenticationService> logger,
+        ILoggerFactory loggerFactory,
         IOptions<StaticAclOptions> options
+    ) : base(loggerFactory, options) { }
+
+    public override ValueTask<TokenRequestAuthenticationResult> AuthenticateAsync(
+        TokenRequest request
     )
     {
-        _logger  = logger;
-        _options = options;
-    }
-
-    public ValueTask<TokenRequestAuthenticationResult> AuthenticateAsync(TokenRequest request)
-    {
-        _logger.LogDebug("Authorizing token request: {RequestId}", request.Id);
+        Logger.LogDebug("Authorizing token request: {RequestId}", request.Id);
 
         if (TryAuthenticateWithBasicCredentials(
                 request,
                 out TokenRequestAuthenticationResult result1
             ))
         {
-            _logger.LogDebug("Basic credentials matched");
+            Logger.LogDebug("Basic credentials matched");
             return ValueTask.FromResult(result1);
         }
 
@@ -42,7 +37,7 @@ public class StaticAclAuthenticationService : IAclAuthenticationService
                 out TokenRequestAuthenticationResult result2
             ))
         {
-            _logger.LogDebug("Connection credentials matched");
+            Logger.LogDebug("Connection credentials matched");
             return ValueTask.FromResult(result2);
         }
 
@@ -50,11 +45,11 @@ public class StaticAclAuthenticationService : IAclAuthenticationService
 
         if (result3.IsSuccessful)
         {
-            _logger.LogDebug("Found anonymous user");
+            Logger.LogDebug("Found anonymous user");
             return ValueTask.FromResult(result3);
         }
 
-        _logger.LogDebug("Auth failed");
+        Logger.LogDebug("Auth failed");
 
         return ValueTask.FromResult(TokenRequestAuthenticationResult.Failed);
     }
@@ -66,7 +61,7 @@ public class StaticAclAuthenticationService : IAclAuthenticationService
     {
         string matchTarget = request.ConnectionCredentials.ToString();
 
-        StaticAclUser? user = _options.Value.Users.FirstOrDefault(
+        StaticAclUser? user = Options.Value.Users.FirstOrDefault(
             user => !string.IsNullOrEmpty(user.Ip) && user.Ip.ToGlob().IsMatch(matchTarget)
         );
 
@@ -85,7 +80,7 @@ public class StaticAclAuthenticationService : IAclAuthenticationService
             return false;
         }
 
-        StaticAclUser? user = _options.Value.Users.FirstOrDefault(
+        StaticAclUser? user = Options.Value.Users.FirstOrDefault(
             user => user.Username.Equals(request.BasicCredentials.Username)
         );
 
@@ -119,7 +114,7 @@ public class StaticAclAuthenticationService : IAclAuthenticationService
 
     TokenRequestAuthenticationResult TryAuthenticateWithFallbackPolicy()
     {
-        StaticAclUser? anonUser = _options.Value.Users.FirstOrDefault(
+        StaticAclUser? anonUser = Options.Value.Users.FirstOrDefault(
             user => string.IsNullOrEmpty(user.Password)          &&
                     string.IsNullOrEmpty(user.PlainTextPassword) &&
                     string.IsNullOrEmpty(user.Ip)

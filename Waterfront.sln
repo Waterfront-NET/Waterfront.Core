@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Acl.Static.Model
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.AspNetCore", "src\Waterfront.AspNetCore\Waterfront.AspNetCore.csproj", "{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waterfront.Server", "src\Waterfront.Server\Waterfront.Server.csproj", "{A847310D-ACCF-4B5B-9AF0-E53C9E332EF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B3E2C00-1C24-4B43-BE1E-FF98780C0CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A847310D-ACCF-4B5B-9AF0-E53C9E332EF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A847310D-ACCF-4B5B-9AF0-E53C9E332EF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A847310D-ACCF-4B5B-9AF0-E53C9E332EF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A847310D-ACCF-4B5B-9AF0-E53C9E332EF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

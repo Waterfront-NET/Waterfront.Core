@@ -3,7 +3,7 @@ using Waterfront.Common.Acl;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 
-namespace Waterfront.Core;
+namespace Waterfront.Core.Authorization;
 
 public interface IAclAuthorizationService
 {

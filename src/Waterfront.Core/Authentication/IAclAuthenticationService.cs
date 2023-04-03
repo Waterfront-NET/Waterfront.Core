@@ -2,7 +2,7 @@
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Tokens;
 
-namespace Waterfront.Core;
+namespace Waterfront.Core.Authentication;
 
 public interface IAclAuthenticationService
 {
