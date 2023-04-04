@@ -5,7 +5,7 @@ using Waterfront.Common.Tokens;
 
 namespace Waterfront.Core;
 
-public interface ITokenRequestCreationService
+public interface ITokenRequestService
 {
     ValueTask<TokenRequest> CreateRequestAsync(
         string service,

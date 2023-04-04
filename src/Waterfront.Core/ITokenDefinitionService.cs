@@ -5,9 +5,9 @@ using Waterfront.Common.Tokens;
 
 namespace Waterfront.Core;
 
-public interface ITokenResponseCreationService
+public interface ITokenDefinitionService
 {
-    ValueTask<TokenResponse> CreateResponseAsync(
+    ValueTask<TokenDefinition> CreateTokenDefinitionAsync(
         TokenRequest request,
         TokenRequestAuthenticationResult authenticationResult,
         TokenRequestAuthorizationResult authorizationResult

@@ -11,6 +11,10 @@ public record BasicCredentials(string Username, string Password)
     public static readonly BasicCredentials
         Empty = new BasicCredentials(string.Empty, string.Empty);
 
+    public bool IsEmpty => !HasUsername && !HasPassword;
+    public bool HasUsername => !string.IsNullOrEmpty(Username);
+    public bool HasPassword => !string.IsNullOrEmpty(Password);
+
     public static BasicCredentials Parse(string? input)
     {
         if (string.IsNullOrEmpty(input))
@@ -36,6 +40,11 @@ public record BasicCredentials(string Username, string Password)
         return new BasicCredentials(parts[0], parts[1]);
     }
 
+    /// <summary>
+    /// Checks if header's value is Basic Authentication
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static bool CheckHeaderValue(string value)
     {
         return value.StartsWith(HEADER_PREFIX);

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Win32;
 using Waterfront.Common.Acl;
 
 namespace Waterfront.Core.Utility.Serialization.Acl;

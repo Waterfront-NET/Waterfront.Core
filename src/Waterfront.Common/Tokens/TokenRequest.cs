@@ -44,14 +44,15 @@ public readonly struct TokenRequest
             throw new ArgumentNullException(nameof(service));
         }
 
-        Id = id;
-        Service = service;
-        Account = account;
-        Client = client;
-        OfflineToken = offlineToken;
-        Scopes = scopes ?? Array.Empty<TokenRequestScope>();
+        Id               = id;
+        Service          = service;
+        Account          = account;
+        Client           = client;
+        OfflineToken     = offlineToken;
+        Scopes           = scopes ?? Array.Empty<TokenRequestScope>();
         BasicCredentials = basicCredentials;
-        ConnectionCredentials = connectionCredentials ?? throw new ArgumentNullException(nameof(connectionCredentials));
+        ConnectionCredentials = connectionCredentials ??
+                                throw new ArgumentNullException(nameof(connectionCredentials));
         RefreshTokenCredentials = refreshTokenCredentials;
     }
 }

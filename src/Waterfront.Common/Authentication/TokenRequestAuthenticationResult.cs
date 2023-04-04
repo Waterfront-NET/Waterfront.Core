@@ -2,11 +2,20 @@
 
 namespace Waterfront.Common.Authentication;
 
-public class TokenRequestAuthenticationResult
+public readonly struct TokenRequestAuthenticationResult
 {
-    public static readonly TokenRequestAuthenticationResult Failed =
-        new TokenRequestAuthenticationResult();
+    public static readonly TokenRequestAuthenticationResult Failed = default;
 
     public bool IsSuccessful => User != null;
     public AclUser? User { get; init; }
 }
+
+/*PROTOTYPE*/
+/*public enum TokenRequestAuthenticationResultType
+{
+    Success,
+    UserNotFound,
+    InvalidPassword,
+    InvalidRefreshToken,
+    ExpiredRefreshToken
+}*/

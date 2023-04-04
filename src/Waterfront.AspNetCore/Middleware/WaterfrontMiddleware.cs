@@ -1,16 +1,22 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.AspNetCore.Configuration;
+using Waterfront.AspNetCore.Extensions;
+using Waterfront.AspNetCore.Extensions.Tokens;
+using Waterfront.AspNetCore.Json.Converters;
+using Waterfront.AspNetCore.Services.Authentication;
+using Waterfront.AspNetCore.Services.Authorization;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
+using Waterfront.Common.Contracts.Response;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
-using Waterfront.Core.Authentication;
-using Waterfront.Core.Authorization;
 using Waterfront.Core.Jwt;
 using Waterfront.Core.Utility.Parsing;
 
@@ -35,138 +41,124 @@ public class WaterfrontMiddleware
 
     public async Task InvokeAsync(
         HttpContext context,
-        ITokenRequestCreationService tokenRequestCreationService,
-        IEnumerable<IAclAuthenticationService> authenticationServices,
-        IEnumerable<IAclAuthorizationService> authorizationServices,
-        ITokenResponseCreationService tokenResponseCreationService,
-        ITokenCreationService tokenCreationService
+        ITokenRequestService tokenRequestCreationService,
+        ITokenDefinitionService tokenResponseCreationService,
+        ITokenEncoder tokenEncoder,
+        TokenRequestAuthenticationService tokenRequestAuthenticationService,
+        TokenRequestAuthorizationService tokenRequestAuthorizationService
     )
     {
-        if (context.Request.Path == _endpointOptions.Value.TokenEndpoint)
+        if ( context.Request.Path == _endpointOptions.Value.TokenEndpoint )
         {
-            IQueryCollection query = context.Request.Query;
-
-            if (!QueryParamResolver.TryGetQueryParams(
-                    query,
-                    out string service,
-                    out string? account,
-                    out string? clientId,
-                    out string? offlineToken,
-                    out IEnumerable<string> scopes
-                ))
-            {
-                await Results.BadRequest(new { message = "Invalid query string" }).ExecuteAsync(context);
-                return;
-            }
-
-            TokenRequest tokenRequest = await tokenRequestCreationService.CreateRequestAsync(
-                                            service,
-                                            context.Connection.RemoteIpAddress!,
-                                            context.Connection.RemotePort,
-                                            account,
-                                            clientId,
-                                            PrimitiveParser.ParseBoolean(offlineToken),
-                                            scopes,
-                                            context.Request.Headers.Authorization.ToString(),
-                                            null
-                                        );
-
-            TokenRequestAuthenticationResult authnResult = TokenRequestAuthenticationResult.Failed;
-
-            foreach (IAclAuthenticationService authenticationService in authenticationServices)
-            {
-                TokenRequestAuthenticationResult authnResultTemp =
-                await authenticationService.AuthenticateAsync(tokenRequest);
-
-                if (authnResultTemp.IsSuccessful)
-                {
-                    authnResult = authnResultTemp;
-                    break;
-                }
-            }
-
-            if (!authnResult.IsSuccessful)
-            {
-                _logger.LogError("Failed to authenticate");
-                await context.Response.WriteAsJsonAsync(new UnauthorizedResult());
-                return;
-            }
-
-            _logger.LogInformation(
-                "Authentication successful:\n{@AuthenticationResult}",
-                authnResult
+            await InvokeTokenEndpointAsync(
+                context,
+                tokenRequestCreationService,
+                tokenRequestAuthenticationService,
+                tokenRequestAuthorizationService,
+                tokenResponseCreationService,
+                tokenEncoder
             );
+        }
+        else if ( context.Request.Path == _endpointOptions.Value.InfoEndpoint )
+        {
+            await InvokeInfoEndpointAsync(context);
+        }
 
-            TokenRequestAuthorizationResult authzResult = new TokenRequestAuthorizationResult {
-                AuthorizedScopes = Array.Empty<TokenRequestScope>(),
-                ForbiddenScopes  = tokenRequest.Scopes
-            };
+        else if ( context.Request.Path == _endpointOptions.Value.PublicKeyEndpoint )
+        {
+            await InvokePublicKeyEndpointAsync(context);
+        }
+        else
+        {
+            await _next(context);
+        }
+    }
 
-            foreach (IAclAuthorizationService authorizationService in authorizationServices)
-            {
-                TokenRequestAuthorizationResult authzResultTemp =
-                await authorizationService.AuthorizeAsync(tokenRequest, authnResult.User!);
+    private async Task InvokeTokenEndpointAsync(
+        HttpContext context,
+        ITokenRequestService tokenRequestService,
+        TokenRequestAuthenticationService tokenRequestAuthenticationService,
+        TokenRequestAuthorizationService tokenRequestAuthorizationService,
+        ITokenDefinitionService tokenDefinitionService,
+        ITokenEncoder tokenEncoder
+    )
+    {
+        (bool tokenRequestCreated, TokenRequest tokenRequest) =
+        await tokenRequestService.TryCreateRequestAsync(context);
 
-                if (authzResultTemp.IsSuccessful)
-                {
-                    authzResult = authzResultTemp;
-                    break;
-                }
-
-                IEnumerable<TokenRequestScope> allAuthzed =
-                authzResult.AuthorizedScopes.Concat(authzResultTemp.AuthorizedScopes);
-
-                authzResult = new TokenRequestAuthorizationResult {
-                    AuthorizedScopes = allAuthzed,
-                    ForbiddenScopes =
-                    tokenRequest.Scopes.Where(scope => !allAuthzed.Contains(scope))
-                };
-
-                if (authzResult.IsSuccessful)
-                    break;
-            }
-
-            if (!authzResult.IsSuccessful)
-            {
-                await context.Response.WriteAsJsonAsync(new UnauthorizedResult());
-                return;
-            }
-
-            TokenResponse tokenResponse = await tokenResponseCreationService.CreateResponseAsync(
-                                              tokenRequest,
-                                              authnResult,
-                                              authzResult
-                                          );
-
-            string token = await tokenCreationService.CreateTokenAsync(tokenResponse);
-
-            var responseRaw = new { token };
-
-            await context.Response.WriteAsJsonAsync(responseRaw);
+        if ( !tokenRequestCreated )
+        {
+            await Results.BadRequest(new { message = "Invalid request params" })
+                         .ExecuteAsync(context);
             return;
         }
 
-        if (context.Request.Path == _endpointOptions.Value.InfoEndpoint)
+        TokenRequestAuthenticationResult authNResult =
+        await tokenRequestAuthenticationService.AuthenticateAsync(tokenRequest);
+
+        if ( !authNResult.IsSuccessful )
         {
-            throw new NotImplementedException();
+            _logger.LogWarning("Failed to authenticate request {RequestId}", tokenRequest.Id);
+            await context.Response.WriteAsJsonAsync(
+                new {
+                    statusCode = 401,
+                    message    = "Failed to authenticate"
+                }
+            );
+            context.Response.StatusCode = HttpStatusCode.Unauthorized.ToInt32();
+            return;
         }
 
-        if (context.Request.Path == _endpointOptions.Value.PublicKeyEndpoint)
+        TokenRequestAuthorizationResult authZResult =
+        await tokenRequestAuthorizationService.AuthorizeAsync(tokenRequest, authNResult);
+
+        if ( !authZResult.IsSuccessful )
         {
-            throw new NotImplementedException();
+            _logger.LogWarning(
+                "Failed to authorize request {RequestId}, authorization failed for the following scopes: {@ForbiddenScopes}",
+                tokenRequest.Id,
+                authZResult.ForbiddenScopes
+            );
+            await context.Response.WriteAsJsonAsync(
+                new {
+                    message         = "Failed to authorize",
+                    forbiddenScopes = authZResult.ForbiddenScopes,
+                    statusCode      = 401
+                }
+            );
+            context.Response.StatusCode = HttpStatusCode.Unauthorized.ToInt32();
+            return;
         }
 
-        await _next(context);
+        TokenDefinition tokenDefinition =
+        await tokenDefinitionService.CreateTokenDefinitionAsync(
+            tokenRequest,
+            authNResult,
+            authZResult
+        );
+
+        string jwToken = await tokenEncoder.EncodeTokenAsync(tokenDefinition);
+
+        TokenResponseDTO tokenDto = new TokenResponseDTO {
+            Token = jwToken,
+            IssuedAt = tokenDefinition.IssuedAt.ToString("O"),
+            ExpiresIn = (int) (tokenDefinition.ExpiresAt - tokenDefinition.IssuedAt).TotalSeconds,
+            RefreshToken = null
+        };
+
+        await context.Response.WriteAsJsonAsync(
+            tokenDto,
+            new JsonSerializerOptions { Converters = { TokenResponseJsonConverter.Instance } }
+        );
+        context.Response.StatusCode = HttpStatusCode.OK.ToInt32();
     }
 
-    private async Task InvokeTokenEndpoint(HttpContext context) { }
-
-    private Task InvokeInfoEndpoint(HttpContext context)
+    private Task InvokeInfoEndpointAsync(HttpContext context)
     {
         throw new NotImplementedException();
     }
 
-    private Task InvokePublicKeyEndpoint(HttpContext context)
+    private Task InvokePublicKeyEndpointAsync(HttpContext context)
     {
         throw new NotImplementedException();
     }

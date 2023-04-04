@@ -10,11 +10,11 @@ using Waterfront.Core.Utility.Parsing.Acl;
 
 namespace Waterfront.Core;
 
-public class TokenRequestCreationService : ITokenRequestCreationService
+public class TokenRequestService : ITokenRequestService
 {
-    private readonly ILogger<TokenRequestCreationService> _logger;
+    private readonly ILogger<TokenRequestService> _logger;
 
-    public TokenRequestCreationService(ILogger<TokenRequestCreationService> logger)
+    public TokenRequestService(ILogger<TokenRequestService> logger)
     {
         _logger = logger;
     }

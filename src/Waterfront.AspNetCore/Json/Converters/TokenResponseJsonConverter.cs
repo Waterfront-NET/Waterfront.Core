@@ -6,6 +6,8 @@ namespace Waterfront.AspNetCore.Json.Converters;
 
 public class TokenResponseJsonConverter : JsonConverter<TokenResponseDTO>
 {
+    public static readonly TokenResponseJsonConverter Instance = new TokenResponseJsonConverter();
+
     public override TokenResponseDTO Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
@@ -24,24 +26,24 @@ public class TokenResponseJsonConverter : JsonConverter<TokenResponseDTO>
         writer.WritePropertyName("access_token");
         writer.WriteStringValue(value.Token);
 
-        if (value.IssuedAt != null)
+        if ( value.IssuedAt != null )
         {
             writer.WritePropertyName("issued_at");
             writer.WriteStringValue(value.IssuedAt);
         }
 
-        if (value.ExpiresIn.HasValue)
+        if ( value.ExpiresIn.HasValue )
         {
             writer.WritePropertyName("expires_in");
             writer.WriteNumberValue(value.ExpiresIn.Value);
         }
 
-        if (value.RefreshToken != null)
+        if ( value.RefreshToken != null )
         {
             writer.WritePropertyName("refresh_token");
             writer.WriteStringValue(value.RefreshToken);
         }
-        
+
         writer.WriteEndObject();
     }
 }

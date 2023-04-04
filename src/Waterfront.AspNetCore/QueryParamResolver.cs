@@ -15,10 +15,11 @@ public static class QueryParamResolver
     {
         service = string.Empty;
         account = clientId = offlineToken = null;
-        scopes  = Array.Empty<string>();
+        scopes  = Enumerable.Empty<string>();
 
         if (!query.ContainsKey("service"))
         {
+            // Service is the minimal required parameter set for a valid request
             return false;
         }
 
@@ -41,13 +42,14 @@ public static class QueryParamResolver
 
         if (query.ContainsKey("scope"))
         {
-            var list = new List<string>();
-            foreach (string value in query["scope"])
-            {
-                list.Add(value);
-            }
-
-            scopes = list;
+            scopes = query["scope"];
+            // var list = new List<string>();
+            // foreach (string value in query["scope"])
+            // {
+            //     list.Add(value);
+            // }
+            //
+            // scopes = list;
         }
 
         return true;

@@ -22,9 +22,9 @@ public static class WaterfrontExtensions
     {
         services.AddOptions();
         
-        services.TryAddScoped<ITokenRequestCreationService, TokenRequestCreationService>();
-        services.TryAddScoped<ITokenResponseCreationService, TokenResponseCreationService>();
-        services.TryAddScoped<ITokenCreationService, TokenCreationService>();
+        services.TryAddScoped<ITokenRequestService, TokenRequestService>();
+        services.TryAddScoped<ITokenDefinitionService, TokenDefinitionService>();
+        services.TryAddScoped<ITokenEncoder, TokenEncoder>();
 
         return services;
     }

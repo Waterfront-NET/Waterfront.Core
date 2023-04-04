@@ -37,11 +37,11 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
             p => user.Acl.Contains(p.Name, StringComparer.OrdinalIgnoreCase)
         );
 
-        foreach (TokenRequestScope scope in request.Scopes)
+        foreach ( TokenRequestScope scope in request.Scopes )
         {
-            foreach (StaticAclPolicy policy in policies)
+            foreach ( StaticAclPolicy policy in policies )
             {
-                if (TryAuthorize(scope, policy))
+                if ( TryAuthorize(scope, policy) )
                 {
                     authorizedScopes.Add(scope);
                 }
@@ -56,21 +56,44 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
             new TokenRequestAuthorizationResult {
                 AuthorizedScopes = authorizedScopes,
                 ForbiddenScopes  = forbiddenScopes
-            }
+            }   
         );
     }
 
-    private static bool TryAuthorize(TokenRequestScope scope, StaticAclPolicy policy)
+    private bool TryAuthorize(TokenRequestScope scope, StaticAclPolicy policy)
     {
-        return policy.Access.Where(rule => rule.Type.Equals(scope.Type.ToSerialized()))
-                     .Where(rule => rule.Name.ToGlob().IsMatch(scope.Name))
-                     .Any(rule => CheckRequiredActions(rule, scope));
+        Logger.LogDebug("Trying to authorize scope {@Scope} with policy {@Policy}", scope, policy);
+
+        var matchingByType =
+        policy.Access.Where(rule => rule.Type.Equals(scope.Type.ToSerialized()));
+        var matchingByname  = matchingByType.Where(rule => rule.Name.ToGlob().IsMatch(scope.Name));
+        var matchingByCheck = matchingByname.Any(rule => CheckRequiredActions(rule, scope));
+
+        Logger.LogDebug("MatchingByType: {@MatchingByType}", matchingByType);
+        Logger.LogDebug("MatchingByName: {@MatchingByName}", matchingByname);
+        Logger.LogDebug("Matching by check: {MatchingByCheck}", matchingByCheck);
+
+        return matchingByCheck;
     }
 
-    private static bool CheckRequiredActions(
-        StaticAclPolicyAccessRule rule,
-        TokenRequestScope scope
-    ) =>
-    rule.Actions.Contains(AclResourceAction.Any.ToSerialized()) ||
-    scope.Actions.Select(AclEntitySerializer.ToSerialized).All(rule.Actions.Contains);
+    private bool CheckRequiredActions(StaticAclPolicyAccessRule rule, TokenRequestScope scope)
+    {
+        Logger.LogInformation("CheckRequiredActions({@Rule}, {@Scope})", rule, scope);
+
+        bool containsAny = rule.Actions.Contains(AclResourceAction.Any.ToSerialized());
+
+        Logger.LogInformation("ContainsAny: {ContainsAny}", containsAny);
+
+        if ( containsAny )
+        {
+            return true;
+        }
+
+        bool containsAllRequired = scope.Actions.Select(AclEntitySerializer.ToSerialized)
+                                        .All(rule.Actions.Contains);
+
+        Logger.LogInformation("ContainsAllRequired: {ContainsAllRequired}", containsAllRequired);
+
+        return containsAllRequired;
+    }
 }

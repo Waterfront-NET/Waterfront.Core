@@ -9,7 +9,7 @@ public class AclRefreshToken
     public DateTime ExpiresAt { get; }
 
     /// <summary>
-    /// <see cref="AclUser"/> that owns this token
+    /// <see cref="AclUser.Username"/> of the user that owns this token
     /// </summary>
     public string Owner { get; }
 
