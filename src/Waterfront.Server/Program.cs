@@ -4,7 +4,6 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Waterfront.Acl.Static;
 using Waterfront.Acl.Static.Models;
 using Waterfront.Acl.Static.Options;
-using Waterfront.AspNetCore.Configuration;
 using Waterfront.AspNetCore.Extensions;
 using Waterfront.AspNetCore.Services.Authentication;
 using Waterfront.AspNetCore.Services.Authorization;
@@ -23,8 +22,10 @@ if ( !string.IsNullOrEmpty(customConfigFilePath) )
 }
 else
 {
-    builder.Configuration.AddYamlFile("config.yml", true);
+    builder.Configuration.AddYamlFile("wf_config.yaml", true);
+    builder.Configuration.AddYamlFile("wf_config.yml", true);
     builder.Configuration.AddYamlFile("config.yaml", true);
+    builder.Configuration.AddYamlFile("config.yml", true);
 }
 
 builder.Host.UseSerilog(
@@ -37,52 +38,49 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<TokenRequestAuthenticationService>()
-       .AddScoped<TokenRequestAuthorizationService>();
+builder.Services.AddWaterfront(
+    waterfrontBuilder => {
+        waterfrontBuilder.ConfigureTokenOptions(
+                             options => {
+                                 builder.Configuration.GetSection("Tokens").Bind(options);
+                             }
+                         )
+                         .ConfigureEndPoints(endpoints => endpoints.TokenEndpoint = "/token")
+                         .WithCertificateProvider<FileTokenCertificateProvider,
+                             FileTokenCertificateProviderOptions>(
+                             options => {
+                                 builder.Configuration.GetSection("Tokens").Bind(options);
+                             }
+                         );
 
-WaterfrontBuilder waterfrontBuilder = builder.Services.AddWaterfront()
-                                             .ConfigureTokenOptions(
-                                                 options => {
-                                                     builder.Configuration.GetSection("Tokens")
-                                                            .Bind(options);
-                                                 }
-                                             )
-                                             .ConfigureEndPoints(
-                                                 endpoints => endpoints.TokenEndpoint = "/token"
-                                             )
-                                             .WithCertificateProvider<FileTokenCertificateProvider,
-                                                 FileTokenCertificateProviderOptions>(
-                                                 options => {
-                                                     builder.Configuration.GetSection("Tokens")
-                                                            .Bind(options);
-                                                 }
-                                             );
+        StaticAclUser[]? staticAclUsers =
+        builder.Configuration.GetSection("Users").Get<StaticAclUser[]>();
+        StaticAclPolicy[]? staticAclPolicies =
+        builder.Configuration.GetSection("Acl").Get<StaticAclPolicy[]>();
 
-StaticAclUser[]? staticAclUsers = builder.Configuration.GetSection("Users").Get<StaticAclUser[]>();
-StaticAclPolicy[]? staticAclPolicies =
-builder.Configuration.GetSection("Acl").Get<StaticAclPolicy[]>();
+        if ( staticAclUsers is { Length: not 0 } )
+        {
+            waterfrontBuilder.WithAuthentication<StaticAclAuthenticationService>();
+            builder.Services.AddOptions<StaticAclOptions>()
+                   .Configure(
+                       options => {
+                           options.Users = staticAclUsers;
+                       }
+                   );
+        }
 
-if ( staticAclUsers is { Length: not 0 } )
-{
-    waterfrontBuilder.WithAuthentication<StaticAclAuthenticationService>();
-    builder.Services.AddOptions<StaticAclOptions>()
-           .Configure(
-               options => {
-                   options.Users = staticAclUsers;
-               }
-           );
-}
-
-if ( staticAclPolicies is { Length: not 0 } )
-{
-    waterfrontBuilder.WithAuthorization<StaticAclAuthorizationService>();
-    builder.Services.AddOptions<StaticAclOptions>()
-           .Configure(
-               options => {
-                   options.Acl = staticAclPolicies;
-               }
-           );
-}
+        if ( staticAclPolicies is { Length: not 0 } )
+        {
+            waterfrontBuilder.WithAuthorization<StaticAclAuthorizationService>();
+            builder.Services.AddOptions<StaticAclOptions>()
+                   .Configure(
+                       options => {
+                           options.Acl = staticAclPolicies;
+                       }
+                   );
+        }
+    }
+);
 
 WebApplication app = builder.Build();
 
@@ -93,17 +91,6 @@ app.UseWaterfront();
 
 app.MapControllers();
 
-app.Logger.LogInformation(
-    "Configuration path: {ConfigPath}",
-    app.Configuration.GetValue<string>("ConfigPath")
-);
-app.Logger.LogInformation(
-    "TokenOptions: {@TokenOptions}",
-    app.Services.GetRequiredService<IOptions<TokenOptions>>().Value
-);
-app.Logger.LogInformation(
-    "FP opts: {@FPOpts}",
-    app.Services.GetRequiredService<IOptions<FileTokenCertificateProviderOptions>>().Value
-);
+app.Logger.LogInformation("Token options: {@TokenOpts}", app.Services.GetRequiredService<IOptions<TokenOptions>>().Value);
 
 app.Run();
