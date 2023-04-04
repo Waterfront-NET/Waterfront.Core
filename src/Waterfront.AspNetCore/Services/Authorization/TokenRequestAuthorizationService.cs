@@ -25,6 +25,7 @@ public class TokenRequestAuthorizationService
     {
         if (request.IsAuthenticationRequest)
         {
+            // Short-circuit the call to skip all the authorization part since it is not needed
             return new TokenRequestAuthorizationResult {
                 AuthorizedScopes = Array.Empty<TokenRequestScope>(),
                 ForbiddenScopes  = Array.Empty<TokenRequestScope>()
@@ -38,32 +39,32 @@ public class TokenRequestAuthorizationService
 
         AclUser user = authnResult.User!;
 
-        var result = new TokenRequestAuthorizationResult { ForbiddenScopes = request.Scopes };
+        TokenRequestAuthorizationResult authzResult = new TokenRequestAuthorizationResult { ForbiddenScopes = request.Scopes };
         
         foreach (IAclAuthorizationService service in _authorizationServices)
         {
-            var currentResult = await service.AuthorizeAsync(request, user);
+            TokenRequestAuthorizationResult currentResult = await service.AuthorizeAsync(request, authnResult, authzResult);
 
             _logger.LogInformation(
                 "Current result: {@CurrentResult}\nOld result: {@OldResult}",
                 currentResult,
-                result
+                authzResult
             );
 
-            result = result.WithAuthorizedScopes(currentResult.AuthorizedScopes);
+            authzResult = authzResult.WithAuthorizedScopes(currentResult.AuthorizedScopes);
 
-            _logger.LogInformation("Mutated result: {@MutResult}", result);
-            if (result.IsSuccessful)
+            _logger.LogInformation("Mutated result: {@MutResult}", authzResult);
+            if (authzResult.IsSuccessful)
             {
                 break;
             }
         }
 
-        if (!result.IsSuccessful)
+        if (!authzResult.IsSuccessful)
         {
             _logger.LogWarning(
                 "Failed to authorize scopes {@Scopes} on request {RequestId}",
-                result.ForbiddenScopes,
+                authzResult.ForbiddenScopes,
                 request.Id
             );
         }
@@ -72,6 +73,6 @@ public class TokenRequestAuthorizationService
             _logger.LogInformation("Request {RequestId} was successfully authorized", request.Id);
         }
 
-        return result;
+        return authzResult;
     }
 }

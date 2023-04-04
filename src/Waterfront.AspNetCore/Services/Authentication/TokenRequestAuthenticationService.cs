@@ -23,11 +23,11 @@ public class TokenRequestAuthenticationService
     {
         _logger.LogDebug("Authenticating TokenRequest {RequestId}", request.Id);
         
-        var result = TokenRequestAuthenticationResult.Failed;
+        TokenRequestAuthenticationResult result = TokenRequestAuthenticationResult.Failed;
         
         foreach (IAclAuthenticationService service in _authenticationServices)
         {
-            var currentResult = await service.AuthenticateAsync(request);
+            TokenRequestAuthenticationResult currentResult = await service.AuthenticateAsync(request);
 
             if (currentResult.IsSuccessful)
             {

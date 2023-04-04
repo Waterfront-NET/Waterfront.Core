@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Acl;
+using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 
@@ -21,6 +22,7 @@ where TOptions : class
 
     public abstract ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        AclUser user
+        TokenRequestAuthenticationResult authnResult,
+        TokenRequestAuthorizationResult authzResult
     );
 }

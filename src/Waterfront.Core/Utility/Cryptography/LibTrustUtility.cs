@@ -3,6 +3,9 @@ using SimpleBase;
 
 namespace Waterfront.Core.Utility.Cryptography;
 
+/// <summary>
+/// Contains helpers which replicate behaviour of docker's <a href="https://github.com/docker/libtrust">LibTrust</a>
+/// </summary>
 public static class LibTrustUtility
 {
     private const char GROUP_DELIMITER = ':';
@@ -10,6 +13,20 @@ public static class LibTrustUtility
     private const int  CHARS_PER_GROUP = 4;
     private const int  SUB_HASH_LENGTH = 30;
 
+    /// <summary>
+    /// Gets the KeyID to include into JWT header
+    /// </summary>
+    /// <param name="spki">SubjectPublicKeyInfo data of the public key</param>
+    /// <returns>
+    /// KeyID generated using the following algorithm:
+    /// <ul>
+    /// <li>Get SHA256 hash of the <paramref name="spki"/></li>
+    /// <li>Trim first 30 bytes of the hash</li>
+    /// <li>Encode hash to Base32</li>
+    /// <li>Divide this string into 12 groups of 4 characters each</li>
+    /// <li>Concatenate groups using the ":" (colon) symbol</li>
+    /// </ul>
+    /// </returns>
     public static string GetKeyId(byte[] spki)
     {
         using SHA256 sha256  = SHA256.Create();

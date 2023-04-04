@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Waterfront.Common.Acl;
+using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 
@@ -11,10 +12,12 @@ public interface IAclAuthorizationService
     /// Attempts to authorize given <see cref="TokenRequest"/> using given <see cref="AclUser"/> entity
     /// </summary>
     /// <param name="request">Request to authorize</param>
-    /// <param name="user">User to fetch acl policies from</param>
+    /// <param name="authnResult"></param>
+    /// <param name="authzResult"></param>
     /// <returns>Operation result</returns>
     ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        AclUser user
+        TokenRequestAuthenticationResult authnResult,
+        TokenRequestAuthorizationResult authzResult
     );
 }

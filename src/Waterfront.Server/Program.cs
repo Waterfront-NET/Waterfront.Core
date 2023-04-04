@@ -5,9 +5,6 @@ using Waterfront.Acl.Static;
 using Waterfront.Acl.Static.Models;
 using Waterfront.Acl.Static.Options;
 using Waterfront.AspNetCore.Extensions;
-using Waterfront.AspNetCore.Services.Authentication;
-using Waterfront.AspNetCore.Services.Authorization;
-using Waterfront.Core.Configuration;
 using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Security.Cryptography;
 
@@ -30,7 +27,7 @@ else
 }
 
 builder.Host.UseSerilog(
-    (context, configuration) => configuration.MinimumLevel.Debug()
+    (_, configuration) => configuration.MinimumLevel.Debug()
                                              .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
 );
 
@@ -92,6 +89,9 @@ app.UseWaterfront();
 
 app.MapControllers();
 
-app.Logger.LogInformation("Token options: {@TokenOpts}", app.Services.GetRequiredService<IOptions<TokenOptions>>().Value);
+app.Logger.LogInformation(
+    "Token options: {@TokenOpts}",
+    app.Services.GetRequiredService<IOptions<TokenOptions>>().Value
+);
 
 app.Run();

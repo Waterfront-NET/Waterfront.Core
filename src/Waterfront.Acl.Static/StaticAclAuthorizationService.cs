@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Waterfront.Acl.Static.Models;
 using Waterfront.Acl.Static.Options;
 using Waterfront.Common.Acl;
+using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
@@ -25,17 +26,33 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
 
     public override ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        AclUser user
+        TokenRequestAuthenticationResult authnResult,
+        TokenRequestAuthorizationResult currentResult
     )
     {
-        Logger.LogInformation("Authorizing request {RequestId}", request.Id);
+        Logger.LogTrace("AuthorizeAsync({RequestId})", request.Id);
+        Logger.LogTrace("Authentication result: {@AuthenticationResult}", authnResult);
+
+        if ( !authnResult.IsSuccessful )
+        {
+            Logger.LogError(
+                "Cannot authorize request {RequestId}: Authentication result was not successful",
+                request.Id
+            );
+            return ValueTask.FromResult(
+                new TokenRequestAuthorizationResult { ForbiddenScopes = request.Scopes }
+            );
+        }
+
+        var user = authnResult.User;
 
         List<TokenRequestScope> authorizedScopes = new List<TokenRequestScope>();
         List<TokenRequestScope> forbiddenScopes  = new List<TokenRequestScope>();
 
         var policies = Options.Value.Acl.Where(
-            p => user.Acl.Contains(p.Name, StringComparer.OrdinalIgnoreCase)
-        );
+                                  p => user.Acl.Contains(p.Name, StringComparer.OrdinalIgnoreCase)
+                              )
+                              .ToArray();
 
         foreach ( TokenRequestScope scope in request.Scopes )
         {
@@ -56,7 +73,7 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
             new TokenRequestAuthorizationResult {
                 AuthorizedScopes = authorizedScopes,
                 ForbiddenScopes  = forbiddenScopes
-            }   
+            }
         );
     }
 
