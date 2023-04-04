@@ -4,6 +4,8 @@ using Waterfront.Core.Utility.Parsing.Acl;
 
 namespace Waterfront.Acl.Static.Models;
 
+#pragma warning disable CS8618
+
 public class StaticAclPolicyAccessRule
 {
     public string Type { get; set; }

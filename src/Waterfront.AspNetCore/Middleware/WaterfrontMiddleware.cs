@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.AspNetCore.Configuration;
+using Waterfront.AspNetCore.Configuration.Endpoints;
 using Waterfront.AspNetCore.Extensions;
 using Waterfront.AspNetCore.Extensions.Tokens;
 using Waterfront.AspNetCore.Json.Converters;

@@ -3,9 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Tokens;
-using Waterfront.Core.Authentication;
 
-namespace Waterfront.Core;
+namespace Waterfront.Core.Authentication;
 
 public abstract class AclAuthenticationService<TOptions> : IAclAuthenticationService
 where TOptions : class

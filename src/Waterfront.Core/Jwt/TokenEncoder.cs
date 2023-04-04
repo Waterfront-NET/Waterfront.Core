@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Tokens;
 using Waterfront.Core.Configuration;
+using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Extensions.Cryptography;
 using Waterfront.Core.Security.Cryptography;
 
@@ -28,7 +29,7 @@ public class TokenEncoder : ITokenEncoder
         _certificateProvider = certificateProvider;
     }
 
-    public async ValueTask<string> EncodeTokenAsync(TokenDefinition tokenResponse)
+    public async ValueTask<string> EncodeTokenAsync(TokenDefinition definition)
     {
         DateTimeOffset iat = DateTimeOffset.UtcNow;
         DateTimeOffset eat = DateTimeOffset.UtcNow.Add(_options.Value.Lifetime);
@@ -39,9 +40,9 @@ public class TokenEncoder : ITokenEncoder
                                                 await _certificateProvider.GetCertificateAsync()
                                             )
                                         )
-                                        .Id(tokenResponse.Id)
-                                        .Subject(tokenResponse.Subject)
-                                        .Audience(tokenResponse.Service)
+                                        .Id(definition.Id)
+                                        .Subject(definition.Subject)
+                                        .Audience(definition.Service)
                                         .Issuer(_options.Value.Issuer)
                                         .IssuedAt(iat.ToUnixTimeSeconds())
                                         .ExpirationTime(eat.ToUnixTimeSeconds())
@@ -49,7 +50,7 @@ public class TokenEncoder : ITokenEncoder
                                             HeaderName.KeyId,
                                             (await _certificateProvider.GetPublicKeyAsync()).KeyId()
                                         )
-                                        .AddClaim("access", tokenResponse.Access);
+                                        .AddClaim("access", definition.Access);
 
         return builder.Encode();
     }

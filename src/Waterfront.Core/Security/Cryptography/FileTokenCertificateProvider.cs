@@ -16,7 +16,7 @@ public class FileTokenCertificateProvider
 
     public override async ValueTask<X509Certificate2> GetCertificateAsync()
     {
-        if (ShouldReload)
+        if ( ShouldReload )
             await LoadAsync();
 
         return Certificate!;
@@ -26,8 +26,8 @@ public class FileTokenCertificateProvider
     {
         ValidateFilesExist();
 
-        string certificateText = await File.ReadAllTextAsync(Options.CertificatePath);
-        string keyText         = await File.ReadAllTextAsync(Options.PrivateKeyPath);
+        string certificateText = await File.ReadAllTextAsync(Options.GetFullCertificatePath());
+        string keyText         = await File.ReadAllTextAsync(Options.GetFullPrivateKeyPath());
 
         Certificate = X509Certificate2.CreateFromPem(certificateText, keyText);
         OnCertificateLoaded();
@@ -35,23 +35,28 @@ public class FileTokenCertificateProvider
 
     private void ValidateFilesExist()
     {
-        string certificatePath = Path.GetFullPath(Options.CertificatePath);
-
-        if (!File.Exists(certificatePath))
+        if ( !File.Exists(Options.GetFullCertificatePath()) )
         {
             Logger.LogError(
                 "Could not find certificate at path {CertificatePath}",
-                certificatePath
+                Options.GetFullCertificatePath()
             );
-            throw new FileNotFoundException("Could not find certificate file", certificatePath);
+            throw new FileNotFoundException(
+                "Could not find certificate file",
+                Options.GetFullCertificatePath()
+            );
         }
 
-        string privateKeyPath = Path.GetFullPath(Options.PrivateKeyPath);
-
-        if (!File.Exists(privateKeyPath))
+        if ( !File.Exists(Options.GetFullPrivateKeyPath()) )
         {
-            Logger.LogError("Could not find private key at path {PrivateKeyPath}", privateKeyPath);
-            throw new FileNotFoundException("Could not find private key file", privateKeyPath);
+            Logger.LogError(
+                "Could not find private key at path {PrivateKeyPath}",
+                Options.GetFullPrivateKeyPath()
+            );
+            throw new FileNotFoundException(
+                "Could not find private key file",
+                Options.GetFullPrivateKeyPath()
+            );
         }
     }
 }

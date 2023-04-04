@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Waterfront.AspNetCore.Configuration;
+using Waterfront.AspNetCore.Configuration.Endpoints;
 using Waterfront.AspNetCore.Middleware;
 using Waterfront.AspNetCore.Services.Authentication;
 using Waterfront.AspNetCore.Services.Authorization;

@@ -8,6 +8,7 @@ using Waterfront.Common.Authentication;
 using Waterfront.Common.Credentials;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
+using Waterfront.Core.Authentication;
 using Waterfront.Core.Utility.Matching;
 
 namespace Waterfront.Acl.Static;

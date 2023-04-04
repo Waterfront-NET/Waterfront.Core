@@ -2,6 +2,8 @@
 
 namespace Waterfront.Acl.Static.Models;
 
+#pragma warning disable CS8618
+
 public class StaticAclUser
 {
     public string Username { get; set; }

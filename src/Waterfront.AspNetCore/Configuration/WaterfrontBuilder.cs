@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Waterfront.AspNetCore.Configuration.Endpoints;
 using Waterfront.AspNetCore.Extensions;
 using Waterfront.Core;
 using Waterfront.Core.Authentication;
 using Waterfront.Core.Authorization;
 using Waterfront.Core.Configuration;
+using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Security.Cryptography;
 
 namespace Waterfront.AspNetCore.Configuration;

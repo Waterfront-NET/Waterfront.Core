@@ -7,9 +7,9 @@ using Waterfront.Common.Tokens;
 
 namespace Waterfront.Core.Authorization;
 
-public abstract class AclAuthorizationService<TOptions> : IAclAuthorizationService where TOptions:class
+public abstract class AclAuthorizationService<TOptions> : IAclAuthorizationService
+where TOptions : class
 {
-    
     protected ILogger Logger { get; }
     protected IOptions<TOptions> Options { get; }
 

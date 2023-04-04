@@ -2,6 +2,8 @@
 
 namespace Waterfront.Common.Acl;
 
+#pragma warning disable CS8618
+
 public class AclRefreshToken
 {
     public string Value { get; }

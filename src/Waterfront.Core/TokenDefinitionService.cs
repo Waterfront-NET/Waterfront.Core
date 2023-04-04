@@ -7,6 +7,7 @@ using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 using Waterfront.Core.Configuration;
+using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Extensions;
 
 namespace Waterfront.Core;

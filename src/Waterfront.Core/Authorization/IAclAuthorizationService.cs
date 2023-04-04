@@ -8,11 +8,11 @@ namespace Waterfront.Core.Authorization;
 public interface IAclAuthorizationService
 {
     /// <summary>
-    ///
+    /// Attempts to authorize given <see cref="TokenRequest"/> using given <see cref="AclUser"/> entity
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="user"></param>
-    /// <returns></returns>
+    /// <param name="request">Request to authorize</param>
+    /// <param name="user">User to fetch acl policies from</param>
+    /// <returns>Operation result</returns>
     ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
         AclUser user

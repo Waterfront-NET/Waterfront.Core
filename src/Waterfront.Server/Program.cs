@@ -8,6 +8,7 @@ using Waterfront.AspNetCore.Extensions;
 using Waterfront.AspNetCore.Services.Authentication;
 using Waterfront.AspNetCore.Services.Authorization;
 using Waterfront.Core.Configuration;
+using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Security.Cryptography;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
