@@ -4,16 +4,18 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.0-alpha.1</Version>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Waterfront.Common\Waterfront.Common.csproj" />
+    </ItemGroup>
+    
     <ItemGroup>
         <PackageReference Include="Sprache" Version="2.3.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <PackageReference Include="DotNet.Glob" Version="3.1.3" />
         <PackageReference Include="SimpleBase" Version="4.0.0" />
         <PackageReference Include="JWT" Version="10.0.2" />
-        <PackageReference Include="Waterfront.Common" Version="1.0.0-alpha.1" />
     </ItemGroup>
-
+    
 </Project>

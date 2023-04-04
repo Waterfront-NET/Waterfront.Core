@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.AspNetCore.Configuration;
-using Waterfront.AspNetCore.Extensions;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
@@ -30,7 +31,6 @@ public class WaterfrontMiddleware
         _logger          = logger;
         _endpointOptions = endpointOptions;
         _next            = next;
-        logger.LogInformation("Waterfront middleware initialized");
     }
 
     public async Task InvokeAsync(
@@ -42,7 +42,6 @@ public class WaterfrontMiddleware
         ITokenCreationService tokenCreationService
     )
     {
-        _logger.LogInformation("Waterfront middleware invoke");
         if (context.Request.Path == _endpointOptions.Value.TokenEndpoint)
         {
             IQueryCollection query = context.Request.Query;
@@ -56,10 +55,7 @@ public class WaterfrontMiddleware
                     out IEnumerable<string> scopes
                 ))
             {
-                BadRequestObjectResult result =
-                new BadRequestObjectResult(new { message = "Invalid query string" });
-
-                await context.Response.WriteAsJsonAsync(result);
+                await Results.BadRequest(new { message = "Invalid query string" }).ExecuteAsync(context);
                 return;
             }
 

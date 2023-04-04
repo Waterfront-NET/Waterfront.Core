@@ -1,3 +1,4 @@
+using System.Linq;
 using Waterfront.Common.Acl;
 using Waterfront.Core.Utility.Parsing.Acl;
 

@@ -93,4 +93,12 @@ public class WaterfrontBuilder
         );
         return this;
     }
+
+    public WaterfrontBuilder ConfigureEndPoints(Action<WaterfrontEndpointOptions> configureOptions)
+    {
+        _services.AddSingleton<IConfigureOptions<WaterfrontEndpointOptions>>(
+            new ConfigureOptions<WaterfrontEndpointOptions>(configureOptions)
+        );
+        return this;
+    }
 }

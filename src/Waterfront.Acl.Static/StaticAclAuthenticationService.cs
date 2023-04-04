@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Acl.Static.Models;
 using Waterfront.Acl.Static.Options;
@@ -21,6 +23,7 @@ public class StaticAclAuthenticationService : AclAuthenticationService<StaticAcl
         TokenRequest request
     )
     {
+        // FUck you
         Logger.LogDebug("Authorizing token request: {RequestId}", request.Id);
 
         if (TryAuthenticateWithBasicCredentials(

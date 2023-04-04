@@ -1,10 +1,12 @@
-﻿namespace Waterfront.AspNetCore.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Waterfront.AspNetCore.Configuration;
 
 public class WaterfrontEndpointOptions
 {
-    public string TokenEndpoint { get; set; }
-    public string? InfoEndpoint { get; set; }
-    public string? PublicKeyEndpoint { get; set; }
+    public PathString TokenEndpoint { get; set; }
+    public PathString InfoEndpoint { get; set; }
+    public PathString PublicKeyEndpoint { get; set; }
 
     public bool IsTokenEndpointValid => !string.IsNullOrEmpty(TokenEndpoint);
     public bool IsInfoEndpointEnabled => !string.IsNullOrEmpty(InfoEndpoint);

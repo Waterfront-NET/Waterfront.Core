@@ -1,3 +1,4 @@
+using System.Linq;
 using Waterfront.Common.Acl;
 
 namespace Waterfront.Acl.Static.Models;

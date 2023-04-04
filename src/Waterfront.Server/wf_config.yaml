@@ -1,0 +1,3 @@
+﻿tokens:
+  certificatepath: certs/localhost.crt
+  privatekeypath: certs/localhost.key
