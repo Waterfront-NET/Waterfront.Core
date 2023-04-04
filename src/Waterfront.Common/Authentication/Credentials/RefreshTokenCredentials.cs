@@ -1,4 +1,4 @@
-﻿namespace Waterfront.Common.Credentials;
+﻿namespace Waterfront.Common.Authentication.Credentials;
 
 public record RefreshTokenCredentials(string Token)
 {

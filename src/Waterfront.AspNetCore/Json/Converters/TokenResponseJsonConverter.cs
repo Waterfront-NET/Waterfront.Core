@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Waterfront.Common.Contracts.Response;
+using Waterfront.Common.Contracts.Tokens.Response;
 
 namespace Waterfront.AspNetCore.Json.Converters;
 
-public class TokenResponseJsonConverter : JsonConverter<TokenResponseDTO>
+public class TokenResponseJsonConverter : JsonConverter<TokenResponse>
 {
     public static readonly TokenResponseJsonConverter Instance = new TokenResponseJsonConverter();
 
-    public override TokenResponseDTO Read(
+    public override TokenResponse Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options
@@ -16,7 +16,7 @@ public class TokenResponseJsonConverter : JsonConverter<TokenResponseDTO>
 
     public override void Write(
         Utf8JsonWriter writer,
-        TokenResponseDTO value,
+        TokenResponse value,
         JsonSerializerOptions options
     )
     {

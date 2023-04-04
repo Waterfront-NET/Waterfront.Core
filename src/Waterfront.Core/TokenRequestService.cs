@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Waterfront.Common.Credentials;
+using Waterfront.Common.Authentication.Credentials;
 using Waterfront.Common.Tokens;
 using Waterfront.Core.Utility.Parsing.Acl;
 
@@ -41,7 +41,9 @@ public class TokenRequestService : ITokenRequestService
 
         BasicCredentials basicCredentials = BasicCredentials.Parse(basicAuthorization);
         RefreshTokenCredentials refreshTokenCredentials =
-            new RefreshTokenCredentials(refreshToken ?? string.Empty);
+        refreshToken != null
+        ? new RefreshTokenCredentials(refreshToken)
+        : RefreshTokenCredentials.Empty;
 
         _logger.LogDebug(
             "Connection credentials: {ConnectionCredentials}\n" +
@@ -61,10 +63,10 @@ public class TokenRequestService : ITokenRequestService
             account,
             clientId,
             offlineToken,
-            requestScopes,
-            connectionCredentials,
             basicCredentials,
-            refreshTokenCredentials
+            connectionCredentials,
+            refreshTokenCredentials,
+            requestScopes
         );
 
         return ValueTask.FromResult(tokenRequest);

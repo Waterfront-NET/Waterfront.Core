@@ -1,6 +1,6 @@
-﻿namespace Waterfront.Common.Contracts.Response;
+﻿namespace Waterfront.Common.Contracts.Tokens.Response;
 
-public readonly struct TokenResponseDTO
+public readonly struct TokenResponse
 {
     public string Token { get; init; }
     public string AccessToken => Token;

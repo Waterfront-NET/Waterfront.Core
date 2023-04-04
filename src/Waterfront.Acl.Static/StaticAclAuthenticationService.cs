@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Waterfront.Acl.Static.Models;
 using Waterfront.Acl.Static.Options;
 using Waterfront.Common.Authentication;
-using Waterfront.Common.Credentials;
+using Waterfront.Common.Authentication.Credentials;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
 using Waterfront.Core.Authentication;

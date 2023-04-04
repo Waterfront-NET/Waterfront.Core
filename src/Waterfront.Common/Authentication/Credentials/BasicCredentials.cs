@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Waterfront.Common.Credentials;
+namespace Waterfront.Common.Authentication.Credentials;
 
 public record BasicCredentials(string Username, string Password)
 {

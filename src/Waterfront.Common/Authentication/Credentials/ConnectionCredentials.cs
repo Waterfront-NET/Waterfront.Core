@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 
-namespace Waterfront.Common.Credentials;
+namespace Waterfront.Common.Authentication.Credentials;
 
 public record ConnectionCredentials(IPAddress IP, int Port)
 {
@@ -12,13 +11,8 @@ public record ConnectionCredentials(IPAddress IP, int Port)
 
     public string ToString(bool includePort)
     {
-        var strIp = IP.ToString();
+        string strIp = IP.ToString();
 
-        if (includePort)
-        {
-            return string.Concat(strIp, ":", Port.ToString());
-        }
-
-        return strIp;
+        return includePort ? string.Concat(strIp, ":", Port.ToString()) : strIp;
     }
 }

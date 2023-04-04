@@ -15,7 +15,7 @@ using Waterfront.AspNetCore.Services.Authentication;
 using Waterfront.AspNetCore.Services.Authorization;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
-using Waterfront.Common.Contracts.Response;
+using Waterfront.Common.Contracts.Tokens.Response;
 using Waterfront.Common.Tokens;
 using Waterfront.Core;
 using Waterfront.Core.Jwt;
@@ -140,7 +140,7 @@ public class WaterfrontMiddleware
 
         string jwToken = await tokenEncoder.EncodeTokenAsync(tokenDefinition);
 
-        TokenResponseDTO tokenDto = new TokenResponseDTO {
+        TokenResponse tokenDto = new TokenResponse {
             Token = jwToken,
             IssuedAt = tokenDefinition.IssuedAt.ToString("O"),
             ExpiresIn = (int) (tokenDefinition.ExpiresAt - tokenDefinition.IssuedAt).TotalSeconds,

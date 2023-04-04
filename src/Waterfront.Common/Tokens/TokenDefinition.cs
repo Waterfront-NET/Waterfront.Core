@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Waterfront.Common.Tokens;
 
+/// <summary>
+/// Provides a definition for the resulting JWT
+/// </summary>
 public readonly struct TokenDefinition
 {
     public string Id { get; init; }
