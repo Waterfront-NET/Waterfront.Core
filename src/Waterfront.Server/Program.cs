@@ -28,7 +28,7 @@ else
 
 builder.Host.UseSerilog(
     (_, configuration) => configuration.MinimumLevel.Debug()
-                                             .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
+                                       .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
 );
 
 builder.Services.AddControllers();
@@ -38,18 +38,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddWaterfront(
     waterfrontBuilder => {
-        waterfrontBuilder.ConfigureTokenOptions(
-                             options => {
-                                 builder.Configuration.GetSection("Tokens").Bind(options);
-                             }
-                         )
-                         .ConfigureEndPoints(endpoints => endpoints.TokenEndpoint = "/token")
-                         .WithCertificateProvider<FileTokenCertificateProvider,
-                             FileTokenCertificateProviderOptions>(
-                             options => {
-                                 builder.Configuration.GetSection("Tokens").Bind(options);
-                             }
-                         );
+        waterfrontBuilder
+        .ConfigureTokenOptions(options => builder.Configuration.GetSection("Tokens").Bind(options))
+        // .ConfigureEndPoints(endpoints => endpoints.TokenEndpoint = "/token")
+        .WithCertificateProvider<FileTokenCertificateProvider, FileTokenCertificateProviderOptions>(
+            options => builder.Configuration.GetSection("Tokens").Bind(options)
+        );
 
         StaticAclUser[]? staticAclUsers =
         builder.Configuration.GetSection("Users").Get<StaticAclUser[]>();
@@ -85,7 +79,10 @@ WebApplication app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseWaterfront();
+app.UseWaterfront(
+    endpoints => {
+        endpoints.TokenEndpoint = "/token";
+    });
 
 app.MapControllers();
 

@@ -4,9 +4,9 @@ using Waterfront.Common.Tokens;
 
 namespace Waterfront.Common.Authentication;
 
-public readonly struct TokenRequestAuthenticationResult
+public readonly struct AclAuthenticationResult
 {
-    public static readonly TokenRequestAuthenticationResult Failed = default;
+    public static readonly AclAuthenticationResult Failed = default;
 
     [MemberNotNullWhen(true, "User")]
     public bool IsSuccessful => User != null;
@@ -21,10 +21,10 @@ public readonly struct TokenRequestAuthenticationResult
     /// </summary>
     public AclUser? User { get; init; }
 
-    public static TokenRequestAuthenticationResult ForRequest(
+    public static AclAuthenticationResult ForRequest(
         TokenRequest request,
         AclUser? user = null
-    ) => new TokenRequestAuthenticationResult {
+    ) => new AclAuthenticationResult {
         Id   = request.Id,
         User = user
     };

@@ -15,7 +15,7 @@ namespace Waterfront.Core;
 public class TokenDefinitionService : ITokenDefinitionService
 {
     private readonly ILogger<TokenDefinitionService> _logger;
-    private readonly IOptions<TokenOptions>                _tokenOptions;
+    private readonly IOptions<TokenOptions>          _tokenOptions;
 
     public TokenDefinitionService(
         ILogger<TokenDefinitionService> logger,
@@ -28,8 +28,8 @@ public class TokenDefinitionService : ITokenDefinitionService
 
     public ValueTask<TokenDefinition> CreateTokenDefinitionAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authenticationResult,
-        TokenRequestAuthorizationResult authorizationResult
+        AclAuthenticationResult authenticationResult,
+        AclAuthorizationResult authorizationResult
     )
     {
         DateTimeOffset issuedAt = DateTimeOffset.UtcNow;
@@ -48,8 +48,7 @@ public class TokenDefinitionService : ITokenDefinitionService
             Service   = request.Service,
             IssuedAt  = issuedAt,
             ExpiresAt = issuedAt.Add(_tokenOptions.Value.Lifetime),
-            Access = from authorizedScope in authorizationResult.AuthorizedScopes
-                     select authorizedScope.ToTokenResponseAccessEntry()
+            Access    = authorizationResult.AuthorizedScopes
         };
 
         _logger.LogDebug("Response: {@Response}", response);

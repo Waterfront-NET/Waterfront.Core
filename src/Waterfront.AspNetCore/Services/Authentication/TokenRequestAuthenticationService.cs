@@ -19,15 +19,15 @@ public class TokenRequestAuthenticationService
         _authenticationServices = authenticationServices;
     }
 
-    public async ValueTask<TokenRequestAuthenticationResult> AuthenticateAsync(TokenRequest request)
+    public async ValueTask<AclAuthenticationResult> AuthenticateAsync(TokenRequest request)
     {
         _logger.LogDebug("Authenticating TokenRequest {RequestId}", request.Id);
         
-        TokenRequestAuthenticationResult result = TokenRequestAuthenticationResult.Failed;
+        AclAuthenticationResult result = AclAuthenticationResult.Failed;
         
         foreach (IAclAuthenticationService service in _authenticationServices)
         {
-            TokenRequestAuthenticationResult currentResult = await service.AuthenticateAsync(request);
+            AclAuthenticationResult currentResult = await service.AuthenticateAsync(request);
 
             if (currentResult.IsSuccessful)
             {

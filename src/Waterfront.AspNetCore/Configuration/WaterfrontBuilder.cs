@@ -96,10 +96,10 @@ public class WaterfrontBuilder
         return this;
     }
 
-    public WaterfrontBuilder ConfigureEndPoints(Action<WaterfrontEndpointOptions> configureOptions)
+    public WaterfrontBuilder ConfigureEndPoints(Action<EndpointOptions> configureOptions)
     {
-        _services.AddSingleton<IConfigureOptions<WaterfrontEndpointOptions>>(
-            new ConfigureOptions<WaterfrontEndpointOptions>(configureOptions)
+        _services.AddSingleton<IConfigureOptions<EndpointOptions>>(
+            new ConfigureOptions<EndpointOptions>(configureOptions)
         );
         return this;
     }

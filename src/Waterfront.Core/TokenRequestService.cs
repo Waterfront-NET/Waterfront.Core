@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Waterfront.Common.Authentication.Credentials;
 using Waterfront.Common.Tokens;
+using Waterfront.Core.Utility.Parsing;
 using Waterfront.Core.Utility.Parsing.Acl;
 
 namespace Waterfront.Core;
@@ -36,10 +37,11 @@ public class TokenRequestService : ITokenRequestService
         _logger.LogDebug("Creating token request with ID {RequestId}", requestId);
 
         ConnectionCredentials connectionCredentials =
-            new ConnectionCredentials(remoteIpAddress, remotePort);
+        new ConnectionCredentials(remoteIpAddress, remotePort);
 
+        var bcRaw = BasicAuthParser.ParseHeaderValue(basicAuthorization);
 
-        BasicCredentials basicCredentials = BasicCredentials.Parse(basicAuthorization);
+        BasicCredentials basicCredentials = new BasicCredentials(bcRaw.username, bcRaw.password);
         RefreshTokenCredentials refreshTokenCredentials =
         refreshToken != null
         ? new RefreshTokenCredentials(refreshToken)
@@ -47,15 +49,17 @@ public class TokenRequestService : ITokenRequestService
 
         _logger.LogDebug(
             "Connection credentials: {ConnectionCredentials}\n" +
-            "Basic credentials: {BasicCredetnials}\n" +
+            "Basic credentials: {BasicCredentials}\n" +
             "Refresh token credentials: {RefreshTokenCredentials}",
             connectionCredentials,
             basicAuthorization,
             refreshTokenCredentials
         );
         IEnumerable<TokenRequestScope> requestScopes = scopes == null
-            ? Array.Empty<TokenRequestScope>()
-            : scopes.Select(AclEntityParser.ParseTokenRequestScope);
+                                                       ? Array.Empty<TokenRequestScope>()
+                                                       : scopes.Select(
+                                                           AclEntityParser.ParseTokenRequestScope
+                                                       );
 
         TokenRequest tokenRequest = new TokenRequest(
             requestId,
@@ -66,7 +70,7 @@ public class TokenRequestService : ITokenRequestService
             basicCredentials,
             connectionCredentials,
             refreshTokenCredentials,
-            requestScopes
+            requestScopes.ToArray()
         );
 
         return ValueTask.FromResult(tokenRequest);

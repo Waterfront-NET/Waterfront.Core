@@ -14,5 +14,7 @@ public readonly struct TokenDefinition
     public string Issuer { get; init; }
     public DateTimeOffset IssuedAt { get; init; }
     public DateTimeOffset ExpiresAt { get; init; }
-    public IEnumerable<TokenResponseAccessEntry> Access { get; init; }
+    public IReadOnlyList<TokenRequestScope> Access { get; init; }
+
+    public int LifetimeSeconds() => (int) (ExpiresAt - IssuedAt).TotalSeconds;
 }

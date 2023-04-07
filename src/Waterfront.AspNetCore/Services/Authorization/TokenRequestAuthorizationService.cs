@@ -18,15 +18,15 @@ public class TokenRequestAuthorizationService
         _authorizationServices = authorizationServices;
     }
 
-    public async ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
+    public async ValueTask<AclAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authnResult
+        AclAuthenticationResult authnResult
     )
     {
         if (request.IsAuthenticationRequest)
         {
             // Short-circuit the call to skip all the authorization part since it is not needed
-            return new TokenRequestAuthorizationResult {
+            return new AclAuthorizationResult {
                 AuthorizedScopes = Array.Empty<TokenRequestScope>(),
                 ForbiddenScopes  = Array.Empty<TokenRequestScope>()
             };
@@ -39,11 +39,11 @@ public class TokenRequestAuthorizationService
 
         AclUser user = authnResult.User!;
 
-        TokenRequestAuthorizationResult authzResult = new TokenRequestAuthorizationResult { ForbiddenScopes = request.Scopes };
+        AclAuthorizationResult authzResult = new AclAuthorizationResult { ForbiddenScopes = request.Scopes };
         
         foreach (IAclAuthorizationService service in _authorizationServices)
         {
-            TokenRequestAuthorizationResult currentResult = await service.AuthorizeAsync(request, authnResult, authzResult);
+            AclAuthorizationResult currentResult = await service.AuthorizeAsync(request, authnResult, authzResult);
 
             _logger.LogInformation(
                 "Current result: {@CurrentResult}\nOld result: {@OldResult}",

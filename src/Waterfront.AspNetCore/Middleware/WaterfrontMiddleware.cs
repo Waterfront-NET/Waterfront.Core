@@ -26,12 +26,12 @@ namespace Waterfront.AspNetCore.Middleware;
 public class WaterfrontMiddleware
 {
     private readonly ILogger<WaterfrontMiddleware>       _logger;
-    private readonly IOptions<WaterfrontEndpointOptions> _endpointOptions;
+    private readonly IOptions<EndpointOptions> _endpointOptions;
     private readonly RequestDelegate                     _next;
 
     public WaterfrontMiddleware(
         ILogger<WaterfrontMiddleware> logger,
-        IOptions<WaterfrontEndpointOptions> endpointOptions,
+        IOptions<EndpointOptions> endpointOptions,
         RequestDelegate next
     )
     {
@@ -94,7 +94,7 @@ public class WaterfrontMiddleware
             return;
         }
 
-        TokenRequestAuthenticationResult authNResult =
+        AclAuthenticationResult authNResult =
         await tokenRequestAuthenticationService.AuthenticateAsync(tokenRequest);
 
         if ( !authNResult.IsSuccessful )
@@ -110,7 +110,7 @@ public class WaterfrontMiddleware
             return;
         }
 
-        TokenRequestAuthorizationResult authZResult =
+        AclAuthorizationResult authZResult =
         await tokenRequestAuthorizationService.AuthorizeAsync(tokenRequest, authNResult);
 
         if ( !authZResult.IsSuccessful )

@@ -11,5 +11,5 @@ public interface IAclAuthenticationService
     /// </summary>
     /// <param name="request">Request to authenticate</param>
     /// <returns>Authentication result</returns>
-    ValueTask<TokenRequestAuthenticationResult> AuthenticateAsync(TokenRequest request);
+    ValueTask<AclAuthenticationResult> AuthenticateAsync(TokenRequest request);
 }

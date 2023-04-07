@@ -2,9 +2,9 @@
 
 namespace Waterfront.AspNetCore.Configuration.Endpoints;
 
-public class WaterfrontEndpointOptions
+public class EndpointOptions
 {
-    public PathString TokenEndpoint { get; set; } = new PathString("/token");
-    public PathString InfoEndpoint { get; set; } = new PathString("/info");
-    public PathString PublicKeyEndpoint { get; set; } = new PathString("/public-key");
+    public PathString TokenEndpoint { get; set; }
+    public PathString InfoEndpoint { get; set; }
+    public PathString PublicKeyEndpoint { get; set; }
 }

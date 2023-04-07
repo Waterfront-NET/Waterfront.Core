@@ -1,4 +1,7 @@
-﻿namespace Waterfront.Core.Utility.Parsing;
+﻿using System;
+using System.Text;
+
+namespace Waterfront.Core.Utility.Parsing;
 
 public static class BasicAuthParser
 {
@@ -14,16 +17,16 @@ public static class BasicAuthParser
             return (input, string.Empty);
         }
 
-        var delimiterIndex = input.IndexOf(':');
+        int delimiterIndex = input.IndexOf(':');
 
-        var username = input.Substring(0, delimiterIndex);
+        string username = input.Substring(0, delimiterIndex);
 
         if ( delimiterIndex == input.Length - 1 )
         {
             return (username, string.Empty);
         }
 
-        var password = input.Substring(delimiterIndex + 1);
+        string password = input.Substring(delimiterIndex + 1);
 
         return (username, password);
     }
@@ -43,6 +46,6 @@ public static class BasicAuthParser
             return (string.Empty, string.Empty);
         }
 
-        return ParseAuthString(input!.Substring(6));
+        return ParseAuthString(Encoding.UTF8.GetString(Convert.FromBase64String(input![6..])));
     }
 }

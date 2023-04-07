@@ -9,7 +9,7 @@ public interface ITokenDefinitionService
 {
     ValueTask<TokenDefinition> CreateTokenDefinitionAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authenticationResult,
-        TokenRequestAuthorizationResult authorizationResult
+        AclAuthenticationResult authenticationResult,
+        AclAuthorizationResult authorizationResult
     );
 }

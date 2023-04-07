@@ -18,7 +18,7 @@ where TOptions : class
         Options = options;
     }
 
-    public abstract ValueTask<TokenRequestAuthenticationResult> AuthenticateAsync(
+    public abstract ValueTask<AclAuthenticationResult> AuthenticateAsync(
         TokenRequest request
     );
 }

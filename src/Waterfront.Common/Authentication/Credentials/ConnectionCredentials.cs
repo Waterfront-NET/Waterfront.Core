@@ -2,7 +2,7 @@
 
 namespace Waterfront.Common.Authentication.Credentials;
 
-public record ConnectionCredentials(IPAddress IP, int Port)
+public record ConnectionCredentials(IPAddress IpAddress, int Port)
 {
     public override string ToString()
     {
@@ -11,7 +11,7 @@ public record ConnectionCredentials(IPAddress IP, int Port)
 
     public string ToString(bool includePort)
     {
-        string strIp = IP.ToString();
+        string strIp = IpAddress.ToString();
 
         return includePort ? string.Concat(strIp, ":", Port.ToString()) : strIp;
     }

@@ -15,9 +15,9 @@ public interface IAclAuthorizationService
     /// <param name="authnResult"></param>
     /// <param name="authzResult"></param>
     /// <returns>Operation result</returns>
-    ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
+    ValueTask<AclAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authnResult,
-        TokenRequestAuthorizationResult authzResult
+        AclAuthenticationResult authnResult,
+        AclAuthorizationResult authzResult
     );
 }

@@ -24,10 +24,10 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
         IOptions<StaticAclOptions> options
     ) : base(loggerFactory, options) { }
 
-    public override ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
+    public override ValueTask<AclAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authnResult,
-        TokenRequestAuthorizationResult currentResult
+        AclAuthenticationResult authnResult,
+        AclAuthorizationResult currentResult
     )
     {
         Logger.LogTrace("AuthorizeAsync({RequestId})", request.Id);
@@ -40,7 +40,7 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
                 request.Id
             );
             return ValueTask.FromResult(
-                new TokenRequestAuthorizationResult { ForbiddenScopes = request.Scopes }
+                new AclAuthorizationResult { ForbiddenScopes = request.Scopes }
             );
         }
 
@@ -70,7 +70,7 @@ public class StaticAclAuthorizationService : AclAuthorizationService<StaticAclOp
         }
 
         return ValueTask.FromResult(
-            new TokenRequestAuthorizationResult {
+            new AclAuthorizationResult {
                 AuthorizedScopes = authorizedScopes,
                 ForbiddenScopes  = forbiddenScopes
             }

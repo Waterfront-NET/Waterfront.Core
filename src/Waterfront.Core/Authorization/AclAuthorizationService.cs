@@ -20,9 +20,9 @@ where TOptions : class
         Options = options;
     }
 
-    public abstract ValueTask<TokenRequestAuthorizationResult> AuthorizeAsync(
+    public abstract ValueTask<AclAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        TokenRequestAuthenticationResult authnResult,
-        TokenRequestAuthorizationResult authzResult
+        AclAuthenticationResult authnResult,
+        AclAuthorizationResult authzResult
     );
 }

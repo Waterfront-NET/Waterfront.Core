@@ -40,7 +40,7 @@ public readonly struct TokenRequest
     /// <summary>
     /// Resource access that client wants to gain
     /// </summary>
-    public IEnumerable<TokenRequestScope> Scopes { get; }
+    public IReadOnlyList<TokenRequestScope> Scopes { get; }
     /// <summary>
     /// Basic credentials provided with the request.
     /// Usually it's the value of the "Authorization" header
@@ -69,7 +69,7 @@ public readonly struct TokenRequest
         BasicCredentials basicCredentials,
         ConnectionCredentials connectionCredentials,
         RefreshTokenCredentials refreshTokenCredentials,
-        IEnumerable<TokenRequestScope>? scopes
+        IReadOnlyList<TokenRequestScope>? scopes
     )
     {
         if ( string.IsNullOrEmpty(id) )
