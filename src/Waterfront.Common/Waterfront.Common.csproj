@@ -4,10 +4,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Version>1.0.0-alpha.2</Version>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="Contracts\Tokens" />
-    </ItemGroup>
 
 </Project>
