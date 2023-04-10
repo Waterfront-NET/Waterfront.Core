@@ -8,14 +8,15 @@ using Microsoft.Extensions.Options;
 using Waterfront.Common.Tokens;
 using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Extensions.Cryptography;
+using Waterfront.Core.Tokens.Serializers;
 using Waterfront.Core.Tokens.Signing.CertificateProviders;
 
 namespace Waterfront.Core.Tokens.Encoders;
 
 public class TokenEncoder : ITokenEncoder
 {
-    private readonly ILogger<TokenEncoder>       _logger;
-    private readonly IOptions<TokenOptions>      _options;
+    private readonly ILogger<TokenEncoder> _logger;
+    private readonly IOptions<TokenOptions> _options;
     private readonly ISigningCertificateProvider _certificateProvider;
 
     public TokenEncoder(
@@ -24,8 +25,8 @@ public class TokenEncoder : ITokenEncoder
         ISigningCertificateProvider certificateProvider
     )
     {
-        _logger              = logger;
-        _options             = options;
+        _logger = logger;
+        _options = options;
         _certificateProvider = certificateProvider;
     }
 
@@ -45,7 +46,8 @@ public class TokenEncoder : ITokenEncoder
                                        .IssuedAt(iat.ToUnixTimeSeconds())
                                        .ExpirationTime(eat.ToUnixTimeSeconds())
                                        .AddHeader(HeaderName.KeyId, certificate.KeyId())
-                                       .AddClaim("access", definition.Access);
+                                       .AddClaim("access", definition.Access)
+                                       .WithJsonSerializer(new TokenSerializer());
 
         return builder.Encode();
     }
