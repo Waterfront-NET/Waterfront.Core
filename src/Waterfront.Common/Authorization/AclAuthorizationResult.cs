@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Waterfront.Common.Authentication;
 using Waterfront.Common.Tokens;
 
 namespace Waterfront.Common.Authorization;
@@ -17,14 +18,21 @@ public readonly struct AclAuthorizationResult
         ForbiddenScopes  = Array.Empty<TokenRequestScope>();
     }
 
-    public AclAuthorizationResult WithAuthorizedScopes(
-        IEnumerable<TokenRequestScope> scopes
-    )
+    /// <summary>
+    /// Creates a copy of current result, merged with <paramref name="other"/>, containing authorized scopes of both
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public AclAuthorizationResult MergeWith(AclAuthorizationResult other)
     {
-        TokenRequestScope[] newAs = AuthorizedScopes.Union(scopes).ToArray();
+        TokenRequestScope[] allAuthorizedScopes =
+        AuthorizedScopes.Union(other.AuthorizedScopes).ToArray();
+        TokenRequestScope[] remainingForbiddenScopes =
+        ForbiddenScopes.Except(allAuthorizedScopes).ToArray();
+
         return new AclAuthorizationResult {
-            AuthorizedScopes = newAs,
-            ForbiddenScopes  = ForbiddenScopes.Except(newAs).ToArray()
+            AuthorizedScopes = allAuthorizedScopes,
+            ForbiddenScopes  = remainingForbiddenScopes
         };
     }
 }

@@ -28,6 +28,9 @@ public readonly struct AclAuthenticationResult
         Id   = request.Id,
         User = user
     };
+
+    public static AclAuthenticationResult FailedForRequest(TokenRequest request) =>
+    new AclAuthenticationResult { Id = request.Id };
 }
 /*PROTOTYPE*/
 /*public enum TokenRequestAuthenticationResultType
