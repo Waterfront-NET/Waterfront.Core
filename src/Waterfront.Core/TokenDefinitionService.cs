@@ -6,9 +6,8 @@ using Microsoft.Extensions.Options;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
-using Waterfront.Core.Configuration;
 using Waterfront.Core.Configuration.Tokens;
-using Waterfront.Core.Extensions;
+using Waterfront.Core.Utility.Serialization.Acl;
 
 namespace Waterfront.Core;
 
@@ -26,33 +25,62 @@ public class TokenDefinitionService : ITokenDefinitionService
         _tokenOptions = tokenOptions;
     }
 
-    public ValueTask<TokenDefinition> CreateTokenDefinitionAsync(
+    public ValueTask<TokenDefinition> CreateDefinitionAsync(
         TokenRequest request,
         AclAuthenticationResult authenticationResult,
         AclAuthorizationResult authorizationResult
     )
     {
-        DateTimeOffset issuedAt = DateTimeOffset.UtcNow;
+        DateTimeOffset issuedAt  = DateTimeOffset.UtcNow;
+        DateTimeOffset expiresAt = issuedAt.Add(_tokenOptions.Value.Lifetime);
+
         _logger.LogDebug(
-            "Creating TokenResponse for request {RequestId} at {IssuedAt}",
+            "Creating TokenDefinition for request {RequestId} at {IssuedAt}",
             request.Id,
             issuedAt
         );
 
-        TokenDefinition response = new TokenDefinition {
-            Id = request.Id,
-            Subject =
-            authenticationResult.User?.Username ??
-            throw new InvalidOperationException("Cannot create token response for null user"),
+        if ( !authenticationResult.IsSuccessful )
+        {
+            throw new InvalidOperationException(
+                "Cannot create tokenDefinition for request failed to authenticate"
+            ) { Data = { { "request_id", request.Id } } };
+        }
+
+        if ( !authorizationResult.IsSuccessful )
+        {
+            throw new InvalidOperationException(
+                "Cannot create tokenDefinition for request failed to authorize"
+            ) { Data = { { "request_id", request.Id } } };
+        }
+
+        _logger.LogDebug(
+            "Subject: {Subject}\n" +
+            "Issuer: {Issuer}\n" +
+            "Service: {Service}\n" +
+            "IssuedAt: {IssuedAt}\n" +
+            "ExpiresAt: {ExpiresAt}\n" +
+            "Access: {Access}",
+            authenticationResult.User.Username,
+            _tokenOptions.Value.Issuer,
+            request.Service,
+            issuedAt.ToString("O"),
+            expiresAt.ToString("O"),
+            $"[{string.Join(",", authorizationResult.AuthorizedScopes.Select(scope => scope.ToSerialized()))}]"
+        );
+
+        TokenDefinition definition = new TokenDefinition {
+            Id        = request.Id,
+            Subject   = authenticationResult.User.Username,
             Issuer    = _tokenOptions.Value.Issuer,
             Service   = request.Service,
             IssuedAt  = issuedAt,
-            ExpiresAt = issuedAt.Add(_tokenOptions.Value.Lifetime),
+            ExpiresAt = expiresAt,
             Access    = authorizationResult.AuthorizedScopes
         };
 
-        _logger.LogDebug("Response: {@Response}", response);
+        // _logger.LogDebug("TokenDefinition: {@Definition}", definition);
 
-        return ValueTask.FromResult(response);
+        return ValueTask.FromResult(definition);
     }
 }

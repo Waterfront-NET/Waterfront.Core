@@ -7,7 +7,7 @@ namespace Waterfront.Core;
 
 public interface ITokenDefinitionService
 {
-    ValueTask<TokenDefinition> CreateTokenDefinitionAsync(
+    ValueTask<TokenDefinition> CreateDefinitionAsync(
         TokenRequest request,
         AclAuthenticationResult authenticationResult,
         AclAuthorizationResult authorizationResult

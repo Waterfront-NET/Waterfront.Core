@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Waterfront.Common.Tokens;
 
-namespace Waterfront.Core.Jwt;
+namespace Waterfront.Core.Tokens.Encoders;
 
 public interface ITokenEncoder
 {

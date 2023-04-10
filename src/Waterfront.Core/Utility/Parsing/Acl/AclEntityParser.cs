@@ -42,8 +42,13 @@ public static class AclEntityParser
         private static readonly Parser<AclResourceAction> Push = Parse.IgnoreCase("push")
         .Return(AclResourceAction.Push);
 
-        private static readonly Parser<AclResourceAction> Any =
-        Parse.Char('*').Return(AclResourceAction.Any);
+        private static readonly Parser<AclResourceAction> Any = Parse.Char('*')
+        .Select(
+            /*using string.Empty to avoid creating immediately discarded string*/
+            _ => string.Empty
+        )
+        .Or(Parse.IgnoreCase("any"))
+        .Return(AclResourceAction.Any);
 
         public static readonly Parser<AclResourceAction> ResourceAction = Pull.Or(Push).Or(Any);
 

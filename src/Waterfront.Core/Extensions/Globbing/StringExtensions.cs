@@ -1,6 +1,6 @@
 ﻿using DotNet.Globbing;
 
-namespace Waterfront.Core.Utility.Matching;
+namespace Waterfront.Core.Extensions.Globbing;
 
 public static class StringExtensions
 {

@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Waterfront.Core.Security.Cryptography;
+namespace Waterfront.Core.Tokens.Signing.CertificateProviders;
 
-public class FileTokenCertificateProvider
-: TokenCertificateProvider<FileTokenCertificateProviderOptions>
+public class FileSigningCertificateProvider
+: SigningCertificateProviderBase<FileTokenCertificateProviderOptions>
 {
-    public FileTokenCertificateProvider(
+    public FileSigningCertificateProvider(
         ILoggerFactory loggerFactory,
         IOptionsMonitor<FileTokenCertificateProviderOptions> optionsMonitor
     ) : base(loggerFactory, optionsMonitor) { }
 
-    public override async ValueTask<X509Certificate2> GetCertificateAsync()
+    public override async ValueTask<X509Certificate2> GetCertificateAsync(string? service = null)
     {
         if ( ShouldReload )
             await LoadAsync();

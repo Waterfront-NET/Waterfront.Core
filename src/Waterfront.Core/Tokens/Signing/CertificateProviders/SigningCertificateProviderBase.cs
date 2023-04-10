@@ -3,9 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Waterfront.Core.Security.Cryptography;
+namespace Waterfront.Core.Tokens.Signing.CertificateProviders;
 
-public abstract class TokenCertificateProvider<TOptions> : ITokenCertificateProvider
+/// <summary>
+/// Implements basic caching for derived <see cref="ISigningCertificateProvider"/>
+/// </summary>
+/// <typeparam name="TOptions"></typeparam>
+public abstract class SigningCertificateProviderBase<TOptions> : ISigningCertificateProvider
 where TOptions : class
 {
     private readonly IOptionsMonitor<TOptions> _optionsMonitor;
@@ -16,7 +20,7 @@ where TOptions : class
     protected X509Certificate2? Certificate { get; set; }
     protected bool ShouldReload => Certificate == null || _optionsChanged;
 
-    protected TokenCertificateProvider(
+    protected SigningCertificateProviderBase(
         ILoggerFactory loggerFactory,
         IOptionsMonitor<TOptions> optionsMonitor
     )
@@ -26,11 +30,11 @@ where TOptions : class
         optionsMonitor.OnChange(_ => _optionsChanged = true);
     }
 
-    public abstract ValueTask<X509Certificate2> GetCertificateAsync();
+    public abstract ValueTask<X509Certificate2> GetCertificateAsync(string? service = null);
 
-    public virtual async ValueTask<PublicKey> GetPublicKeyAsync()
+    public virtual async ValueTask<PublicKey> GetPublicKeyAsync(string? service = null)
     {
-        X509Certificate2 certificate = await GetCertificateAsync();
+        X509Certificate2 certificate = await GetCertificateAsync(service);
         return certificate.PublicKey;
     }
 

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using JWT.Algorithms;
 
-namespace Waterfront.Core.Security.Cryptography;
+namespace Waterfront.Core.Tokens.Signing.CertificateProviders;
 
 public class FileTokenCertificateProviderOptions
 {

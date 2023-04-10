@@ -6,13 +6,13 @@ using Waterfront.Common.Tokens;
 
 namespace Waterfront.Core.Authentication;
 
-public abstract class AclAuthenticationService<TOptions> : IAclAuthenticationService
+public abstract class AclAuthenticationServiceBase<TOptions> : IAclAuthenticationService
 where TOptions : class
 {
     protected ILogger Logger { get; }
     protected IOptions<TOptions> Options { get; }
 
-    protected AclAuthenticationService(ILoggerFactory loggerFactory, IOptions<TOptions> options)
+    protected AclAuthenticationServiceBase(ILoggerFactory loggerFactory, IOptions<TOptions> options)
     {
         Logger  = loggerFactory.CreateLogger(GetType());
         Options = options;
