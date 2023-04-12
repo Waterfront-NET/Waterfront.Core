@@ -15,8 +15,8 @@ namespace Waterfront.Core.Tokens.Encoders;
 
 public class TokenEncoder : ITokenEncoder
 {
-    private readonly ILogger<TokenEncoder> _logger;
-    private readonly IOptions<TokenOptions> _options;
+    private readonly ILogger<TokenEncoder>       _logger;
+    private readonly IOptions<TokenOptions>      _options;
     private readonly ISigningCertificateProvider _certificateProvider;
 
     public TokenEncoder(
@@ -25,15 +25,19 @@ public class TokenEncoder : ITokenEncoder
         ISigningCertificateProvider certificateProvider
     )
     {
-        _logger = logger;
-        _options = options;
+        _logger              = logger;
+        _options             = options;
         _certificateProvider = certificateProvider;
     }
 
     public async ValueTask<string> EncodeTokenAsync(TokenDefinition definition)
     {
+        _logger.LogDebug("Encoding token definition: {@Definition}", definition);
+
         DateTimeOffset iat = DateTimeOffset.UtcNow;
-        DateTimeOffset eat = DateTimeOffset.UtcNow.Add(_options.Value.Lifetime);
+        DateTimeOffset exp = DateTimeOffset.UtcNow.Add(_options.Value.Lifetime);
+
+        _logger.LogDebug("Issued at: {@Iat}\nExpires at: {@Exp}", iat, exp);
 
         X509Certificate2 certificate = await _certificateProvider.GetCertificateAsync();
 
@@ -44,10 +48,10 @@ public class TokenEncoder : ITokenEncoder
                                        .Audience(definition.Service)
                                        .Issuer(_options.Value.Issuer)
                                        .IssuedAt(iat.ToUnixTimeSeconds())
-                                       .ExpirationTime(eat.ToUnixTimeSeconds())
+                                       .ExpirationTime(exp.ToUnixTimeSeconds())
                                        .AddHeader(HeaderName.KeyId, certificate.KeyId())
                                        .AddClaim("access", definition.Access)
-                                       .WithJsonSerializer(new TokenSerializer());
+                                       .WithJsonSerializer(TokenSerializer.Instance);
 
         return builder.Encode();
     }

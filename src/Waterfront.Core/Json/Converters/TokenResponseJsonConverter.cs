@@ -7,6 +7,10 @@ namespace Waterfront.Core.Json.Converters;
 
 public class TokenResponseJsonConverter : JsonConverter<TokenResponse>
 {
+    public static TokenResponseJsonConverter Instance = new TokenResponseJsonConverter();
+
+    private TokenResponseJsonConverter() { }
+
     public override TokenResponse Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,

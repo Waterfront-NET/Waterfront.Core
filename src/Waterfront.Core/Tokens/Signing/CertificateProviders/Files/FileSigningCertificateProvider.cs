@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Waterfront.Core.Tokens.Signing.CertificateProviders;
+namespace Waterfront.Core.Tokens.Signing.CertificateProviders.Files;
 
 public class FileSigningCertificateProvider
 : SigningCertificateProviderBase<FileTokenCertificateProviderOptions>

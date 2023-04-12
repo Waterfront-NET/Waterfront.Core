@@ -3,7 +3,7 @@ using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
 
-namespace Waterfront.Core;
+namespace Waterfront.Core.Tokens.Definition;
 
 public interface ITokenDefinitionService
 {

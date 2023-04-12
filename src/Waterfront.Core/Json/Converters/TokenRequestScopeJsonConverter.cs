@@ -9,6 +9,11 @@ namespace Waterfront.Core.Json.Converters;
 
 public class TokenRequestScopeJsonConverter : JsonConverter<TokenRequestScope>
 {
+    public static readonly TokenRequestScopeJsonConverter Instance =
+    new TokenRequestScopeJsonConverter();
+
+    private TokenRequestScopeJsonConverter() { }
+
     public override TokenRequestScope Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,

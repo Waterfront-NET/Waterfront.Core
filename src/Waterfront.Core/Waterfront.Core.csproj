@@ -4,7 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>1.0.0-alpha.6</Version>
+        <Version>1.0.0-alpha.7</Version>
         <IsPackable>true</IsPackable>
     </PropertyGroup>
 
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <Target Name="Push package" AfterTargets="Pack">
-        <Exec Command="dotnet nuget push $(MSBuildThisFileDirectory)bin\Release\Waterfront.Core.$(Version).nupkg -s C:\Users\2CHEVSKII\.nuget\packages"/>
+        <Exec Command="dotnet nuget push $(MSBuildThisFileDirectory)bin\Release\Waterfront.Core.$(Version).nupkg -s C:\Users\2CHEVSKII\.nuget\packages" />
     </Target>
     
 </Project>

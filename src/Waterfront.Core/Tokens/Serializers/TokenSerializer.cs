@@ -8,14 +8,16 @@ namespace Waterfront.Core.Tokens.Serializers;
 
 public class TokenSerializer : IJsonSerializer
 {
+    public static readonly TokenSerializer Instance = new TokenSerializer();
+
     JsonSerializerOptions _options;
 
-    public TokenSerializer()
+    private TokenSerializer()
     {
         _options = new JsonSerializerOptions
         {
             Converters = {
-                new TokenRequestScopeJsonConverter()
+                TokenRequestScopeJsonConverter.Instance
             },
             WriteIndented = false
         };

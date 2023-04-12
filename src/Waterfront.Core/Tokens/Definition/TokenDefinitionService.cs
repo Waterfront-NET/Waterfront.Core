@@ -9,7 +9,7 @@ using Waterfront.Common.Tokens;
 using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Utility.Serialization.Acl;
 
-namespace Waterfront.Core;
+namespace Waterfront.Core.Tokens.Definition;
 
 public class TokenDefinitionService : ITokenDefinitionService
 {
