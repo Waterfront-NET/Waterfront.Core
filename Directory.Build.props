@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <Company></Company>
+    <Authors>2CHEVSKII</Authors>
+    <Copyright>Copyright (c) 2CHEVSKII 2023, MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Waterfront-NET/Waterfront</RepositoryUrl>
+    <Description>Open Source authorization server for Docker registry</Description>
+    <PackageTags>authentication;authorization;docker;registry;tokens</PackageTags>
+  </PropertyGroup>
+
+</Project>
