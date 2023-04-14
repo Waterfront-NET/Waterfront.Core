@@ -2,7 +2,7 @@
 
 namespace Waterfront.Core.Tokens.Signing.CertificateProviders.Files;
 
-public class FileTokenCertificateProviderOptions
+public class FileSigningCertificateProviderOptions
 {
     public string CertificatePath { get; set; }
     public string PrivateKeyPath { get; set; }

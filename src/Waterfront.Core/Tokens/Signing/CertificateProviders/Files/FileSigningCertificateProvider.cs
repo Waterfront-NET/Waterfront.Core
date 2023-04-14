@@ -7,11 +7,11 @@ using Microsoft.Extensions.Options;
 namespace Waterfront.Core.Tokens.Signing.CertificateProviders.Files;
 
 public class FileSigningCertificateProvider
-: SigningCertificateProviderBase<FileTokenCertificateProviderOptions>
+: SigningCertificateProviderBase<FileSigningCertificateProviderOptions>
 {
     public FileSigningCertificateProvider(
         ILoggerFactory loggerFactory,
-        IOptionsMonitor<FileTokenCertificateProviderOptions> optionsMonitor
+        IOptionsMonitor<FileSigningCertificateProviderOptions> optionsMonitor
     ) : base(loggerFactory, optionsMonitor) { }
 
     public override async ValueTask<X509Certificate2> GetCertificateAsync(string? service = null)
