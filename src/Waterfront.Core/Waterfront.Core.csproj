@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <Target Name="Push package" AfterTargets="Pack">
-        <Exec Command="dotnet nuget push $(MSBuildThisFileDirectory)bin\Release\Waterfront.Core.$(Version).nupkg -s C:\Users\2CHEVSKII\.nuget\packages" />
+        <Exec Command="dotnet nuget push $(MSBuildThisFileDirectory)bin\Release\Waterfront.Core.$(Version).nupkg -s $(USERPROFILE)\.nuget\packages" />
     </Target>
-    
+
 </Project>
