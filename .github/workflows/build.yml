@@ -8,15 +8,10 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - name: build Waterfront.Common
-        run: dotnet cake --target :common:build
-      - name: build Waterfront.Core
-        run: dotnet cake --target :core:build
+      - name: Build projects
+        run: dotnet cake --target build --configuration Release
       - name: Create zip archives
         run: dotnet cake --target lib --exclusive
       - uses: actions/upload-artifact@v3
         with:
-          path: artifacts/lib/Waterfront.Common_*.zip
-      - uses: actions/upload-artifact@v3
-        with:
-          path: artifacts/lib/Waterfront.Core_*.zip
+          path: ./artifacts/lib/**
