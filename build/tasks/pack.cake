@@ -29,8 +29,10 @@ var mainLibTask = Task("lib");
 
 foreach(var project in projects) {
   var task = Task(project.TaskName("lib")).Does(() => {
+    var sourceDir = project.Bin(args.Configuration(), "net6.0");
     var targetArchive = paths.Libraries().CombineWithFilePath($"{project.Name}_{version.SemVer}_Release_net6.0.zip");
-     Zip(project.Bin(args.Configuration(), "net6.0"), targetArchive);
+     Zip(sourceDir, targetArchive);
+     Information("Packing {0} directory to target archive: {1}", sourceDir, targetArchive);
   }).IsDependentOn(project.TaskName("build"));
 
   mainLibTask.IsDependentOn(task);
