@@ -13,6 +13,12 @@
       "commands": [
         "dotnet-csharpier"
       ]
+    },
+    "cake.tool": {
+      "version": "3.0.0",
+      "commands": [
+        "dotnet-cake"
+      ]
     }
   }
 }
