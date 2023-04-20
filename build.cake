@@ -1,4 +1,3 @@
-#tool "dotnet:?package=GitVersion.Tool&version=5.12.0"
 #load build/tasks/*.cake
 #load build/data/arguments.cake
 #load build/data/paths.cake

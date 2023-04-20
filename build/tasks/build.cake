@@ -13,7 +13,7 @@ foreach (var project in projects) {
             NoDependencies = true,
             NoIncremental = args.NoIncremental()
         });
-    }).IsDependentOn(project.TaskName("restore"));
+    }).IsDependentOn(project.TaskName("restore")).IsDependentOn("set-version");
     project.Dependencies.ForEach(dep => task.IsDependentOn(dep.TaskName("build")));
 
     mainBuildTask.IsDependentOn(task);
