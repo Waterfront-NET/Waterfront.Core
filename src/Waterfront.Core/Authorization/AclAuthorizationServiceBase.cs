@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
 using Waterfront.Common.Tokens;
+using Waterfront.Common.Tokens.Requests;
 
 namespace Waterfront.Core.Authorization;
 

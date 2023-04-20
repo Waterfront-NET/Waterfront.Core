@@ -1,4 +1,5 @@
 ﻿using Waterfront.Common.Tokens;
+using Waterfront.Common.Tokens.Definition;
 
 namespace Waterfront.Common.Contracts.Tokens.Response;
 

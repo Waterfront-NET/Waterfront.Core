@@ -5,23 +5,24 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
-using Waterfront.Common.Tokens;
+using Waterfront.Common.Tokens.Definition;
+using Waterfront.Common.Tokens.Requests;
 using Waterfront.Core.Configuration.Tokens;
-using Waterfront.Core.Utility.Serialization.Acl;
+using Waterfront.Core.Serialization.Acl;
 
 namespace Waterfront.Core.Tokens.Definition;
 
 public class TokenDefinitionService : ITokenDefinitionService
 {
     private readonly ILogger<TokenDefinitionService> _logger;
-    private readonly IOptions<TokenOptions>          _tokenOptions;
+    private readonly IOptions<TokenOptions> _tokenOptions;
 
     public TokenDefinitionService(
         ILogger<TokenDefinitionService> logger,
         IOptions<TokenOptions> tokenOptions
     )
     {
-        _logger       = logger;
+        _logger = logger;
         _tokenOptions = tokenOptions;
     }
 
@@ -31,7 +32,7 @@ public class TokenDefinitionService : ITokenDefinitionService
         AclAuthorizationResult authorizationResult
     )
     {
-        DateTimeOffset issuedAt  = DateTimeOffset.UtcNow;
+        DateTimeOffset issuedAt = DateTimeOffset.UtcNow;
         DateTimeOffset expiresAt = issuedAt.Add(_tokenOptions.Value.Lifetime);
 
         _logger.LogDebug(
@@ -40,27 +41,33 @@ public class TokenDefinitionService : ITokenDefinitionService
             issuedAt
         );
 
-        if ( !authenticationResult.IsSuccessful )
+        if (!authenticationResult.IsSuccessful)
         {
             throw new InvalidOperationException(
                 "Cannot create tokenDefinition for request failed to authenticate"
-            ) { Data = { { "request_id", request.Id } } };
+            )
+            {
+                Data = { { "request_id", request.Id } }
+            };
         }
 
-        if ( !authorizationResult.IsSuccessful )
+        if (!authorizationResult.IsSuccessful)
         {
             throw new InvalidOperationException(
                 "Cannot create tokenDefinition for request failed to authorize"
-            ) { Data = { { "request_id", request.Id } } };
+            )
+            {
+                Data = { { "request_id", request.Id } }
+            };
         }
 
         _logger.LogDebug(
-            "Subject: {Subject}\n" +
-            "Issuer: {Issuer}\n" +
-            "Service: {Service}\n" +
-            "IssuedAt: {IssuedAt}\n" +
-            "ExpiresAt: {ExpiresAt}\n" +
-            "Access: {Access}",
+            "Subject: {Subject}\n"
+                + "Issuer: {Issuer}\n"
+                + "Service: {Service}\n"
+                + "IssuedAt: {IssuedAt}\n"
+                + "ExpiresAt: {ExpiresAt}\n"
+                + "Access: {Access}",
             authenticationResult.User.Username,
             _tokenOptions.Value.Issuer,
             request.Service,
@@ -69,14 +76,15 @@ public class TokenDefinitionService : ITokenDefinitionService
             $"[{string.Join(",", authorizationResult.AuthorizedScopes.Select(scope => scope.ToSerialized()))}]"
         );
 
-        TokenDefinition definition = new TokenDefinition {
-            Id        = request.Id,
-            Subject   = authenticationResult.User.Username,
-            Issuer    = _tokenOptions.Value.Issuer,
-            Service   = request.Service,
-            IssuedAt  = issuedAt,
+        TokenDefinition definition = new TokenDefinition
+        {
+            Id = request.Id,
+            Subject = authenticationResult.User.Username,
+            Issuer = _tokenOptions.Value.Issuer,
+            Service = request.Service,
+            IssuedAt = issuedAt,
             ExpiresAt = expiresAt,
-            Access    = authorizationResult.AuthorizedScopes
+            Access = authorizationResult.AuthorizedScopes
         };
 
         // _logger.LogDebug("TokenDefinition: {@Definition}", definition);

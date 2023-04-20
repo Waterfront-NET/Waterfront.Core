@@ -1,7 +1,8 @@
 ﻿namespace Waterfront.Common.Authentication.Credentials;
 
-public record RefreshTokenCredentials(string Token)
+public readonly struct RefreshTokenCredentials
 {
-    public static readonly RefreshTokenCredentials Empty = new RefreshTokenCredentials(string.Empty);
-    public bool IsEmpty => string.IsNullOrEmpty(Token);
+    public string Token { get; init; }
+
+    public bool HasValue => !string.IsNullOrEmpty(Token);
 }
