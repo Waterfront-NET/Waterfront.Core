@@ -8,10 +8,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - name: Build projects
-        run: dotnet cake --target build --configuration Release
-      - name: Create zip archives
-        run: dotnet cake --target lib --exclusive
+      - run: dotnet cake --target lib --configuration Release
       - uses: actions/upload-artifact@v3
         with:
           path: ./artifacts/lib/**
