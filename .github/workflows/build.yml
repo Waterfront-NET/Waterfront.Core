@@ -14,3 +14,9 @@ jobs:
         run: dotnet cake --target :core:build
       - name: Create zip archives
         run: dotnet cake --target lib --exclusive
+      - uses: actions/upload-artifact@v3
+        with:
+          path: artifacts/lib/Waterfront.Common_*.zip
+      - uses: actions/upload-artifact@v3
+        with:
+          path: artifacts/lib/Waterfront.Core_*.zip
