@@ -3,11 +3,7 @@ jobs:
   build-project:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install dotnet
-        uses: actions/dotnet@v3
-      - name: Restore dotnet tools
-        run: dotnet tool restore
-      - name: Run cake build
-        run: dotnet cake --configuration Release --target build
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+      - run: dotnet tool restore
+      - run: dotnet cake --configuration Release --target build
