@@ -1,6 +1,14 @@
-mode: Mainline
+mode: ContinuousDelivery
 next-version: 1.0.0
-branches: {}
+branches:
+  develop:
+    increment: Patch
+    regex: develop
+    source-branches:
+      - feature
+      - master
+    is-release-branch: false
+    is-mainline: false
 ignore:
   sha: []
 merge-message-formats: {}

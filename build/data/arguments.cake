@@ -8,6 +8,8 @@ class BuildArguments {
     public string Configuration() => _context.Argument("configuration", _context.Argument("c", "Debug"));
     public string Target() => _context.Argument("target", _context.Argument("t", "build"));
     public bool NoIncremental() => _context.Argument("no-incremental", false);
+    public bool NoBuild() => _context.HasArgument("no-build");
+    public bool IsCi() => _context.GitHubActions().IsRunningOnGitHubActions;
 }
 
 var args = new BuildArguments(Context);

@@ -1,0 +1,8 @@
+on:
+  push:
+    tags:
+      - v*
+      - V*
+jobs:
+  create-release-draft:
+    runs-on: ubuntu-latest

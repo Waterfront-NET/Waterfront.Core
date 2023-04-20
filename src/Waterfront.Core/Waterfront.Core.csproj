@@ -5,19 +5,22 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>$(SEMVER)</Version>
-        <Version Condition="'$(Version)' == ''">1.0.0</Version>
         <InformationalVersion>$(INFO_VER)</InformationalVersion>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>portable</DebugType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0"/>
-        <PackageReference Include="Sprache" Version="2.3.1"/>
-        <PackageReference Include="SimpleBase" Version="4.0.0"/>
-        <PackageReference Include="JWT" Version="10.0.2"/>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Sprache" Version="2.3.1" />
+        <PackageReference Include="SimpleBase" Version="4.0.0" />
+        <PackageReference Include="JWT" Version="10.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Waterfront.Common\Waterfront.Common.csproj"/>
+        <ProjectReference Include="..\Waterfront.Common\Waterfront.Common.csproj" />
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,6 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - run: dotnet cake --target lib --configuration Release
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./artifacts/lib/**
+      - run: dotnet cake --target build --configuration Release
+      - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
+      - run: dotnet cake --target artifacts/lib --configuration Release --no-build

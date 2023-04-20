@@ -29,6 +29,15 @@ class BuildProject {
         Directory().Combine("bin")
                    .Combine(configuration)
                    .Combine(framework);
+
+    public FilePath PackagePath(string configuration, string version) => Directory().Combine("bin")
+                                                                                    .Combine(configuration)
+                                                                                    .CombineWithFilePath($"{Name}.{version}.nupkg");
+
+    public FilePath SymbolPackagePath(string configuration, string version) => Directory().Combine("bin")
+                                                                                          .Combine(configuration)
+                                                                                          .CombineWithFilePath($"{Name}.{version}.snupkg");
+
     public string ShortName() {
         return Name.Replace("Waterfront.", "").ToLowerInvariant();
     }
