@@ -24,6 +24,11 @@ class BuildProject {
     }
 
     public DirectoryPath Directory() => Path.GetDirectory();
+
+    public DirectoryPath Bin(string configuration = "Debug", string framework = "net6.0") =>
+        Directory().Combine("bin")
+                   .Combine(configuration)
+                   .Combine(framework);
     public string ShortName() {
         return Name.Replace("Waterfront.", "").ToLowerInvariant();
     }

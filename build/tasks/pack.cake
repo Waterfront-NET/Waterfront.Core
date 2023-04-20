@@ -1,6 +1,7 @@
 #load ../data/projects.cake
 #load ../data/arguments.cake
 #load ../data/paths.cake
+#load ../data/version.cake
 
 var mainPackTask = Task("pack");
 
@@ -13,12 +14,24 @@ foreach (var project in projects) {
             IncludeSymbols = true
         });
 
-        var packagePath = project.Directory().Combine($"bin/{args.Configuration()}").CombineWithFilePath($"{project.Name}.1.0.0.nupkg");
-        var symPackagePath = project.Directory().Combine($"bin/{args.Configuration()}").CombineWithFilePath($"{project.Name}.1.0.0.snupkg");
+        var packagePath = project.Directory().Combine($"bin/{args.Configuration()}").CombineWithFilePath($"{project.Name}.{version.SemVer}.nupkg");
+        var symPackagePath = project.Directory().Combine($"bin/{args.Configuration()}").CombineWithFilePath($"{project.Name}.{version.SemVer}.snupkg");
 
         CopyFile(packagePath, paths.Packages().CombineWithFilePath(packagePath.GetFilename()));
         CopyFile(packagePath, paths.Packages().CombineWithFilePath(symPackagePath.GetFilename()));
     }).IsDependentOn(project.TaskName("build"));
 
     mainPackTask.IsDependentOn(task);
+}
+
+
+var mainLibTask = Task("lib");
+
+foreach(var project in projects) {
+  var task = Task(project.TaskName("lib")).Does(() => {
+    var targetArchive = paths.Libraries().CombineWithFilePath($"{project.Name}_{version.SemVer}_Release_net6.0.zip");
+     Zip(project.Bin(args.Configuration(), "net6.0"), targetArchive);
+  }).IsDependentOn(project.TaskName("build"));
+
+  mainLibTask.IsDependentOn(task);
 }

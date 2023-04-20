@@ -8,4 +8,9 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - run: dotnet cake --configuration Release --target build
+      - name: build Waterfront.Common
+        run: dotnet cake --target :common:build
+      - name: build Waterfront.Core
+        run: dotnet cake --target :core:build
+      - name: Create zip archives
+        run: dotnet cake --target lib --exclusive
