@@ -8,7 +8,7 @@ Task("set-version-env").Does(() => {
     Environment.SetEnvironmentVariable("BRANCH", version.BranchName);
     Environment.SetEnvironmentVariable("NUGET_VER", version.NuGetVersion);
 
-    Information("Done setting version information:\n" +
+    /* Information("Done setting version information:\n" +
     "Semantic version: {0}\n" +
     "Informational version: {1}\n" +
     "Branch name: {2}\n" +
@@ -18,5 +18,5 @@ Task("set-version-env").Does(() => {
     version.InformationalVersion,
     version.BranchName,
     version.ShortSha,
-    version.NuGetVersion);
+    version.NuGetVersion); */
 });

@@ -32,7 +32,7 @@ foreach(var project in projects) {
             var archiveName = $"{project.Name}_{version.SemVer}_{dir.GetDirectoryName().ToString()}.zip";
             var targetArchive = paths.Libraries().CombineWithFilePath(archiveName);
 
-            Information("Will create archive {0} from directory {1}");
+            Information("Will create archive {0} from directory {1}", archiveName, dir);
 
             Zip(dir, targetArchive);
         });

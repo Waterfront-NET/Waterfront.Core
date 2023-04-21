@@ -6,19 +6,12 @@ using System.Text.Json;
 #load build/data/arguments.cake
 
 Setup(ctx => {
-
-    Information("Running build v{0}", version.SemVer);
-    Information("Package version: {0}", version.NuGetVersion);
-    Verbose("Informational version: {0}", version.InformationalVersion);
+    Information("Starting Waterfront build v{0} on branch {1} with commit {2}", version.SemVer, version.BranchName, version.ShortSha);
+    Verbose("Package version: {0}", version.NuGetVersion);
+    Verbose("Full informational version: {0}", version.InformationalVersion);
 
     EnsureDirectoryExists(paths.Libraries());
     EnsureDirectoryExists(paths.Packages());
-
-    Information("GitHub actions debug info:\n{0}",
-    JsonSerializer.Serialize(GitHubActions.Environment.Runtime));
 });
 
 RunTarget(args.Target());
-
-
-// RunTarget(target);
