@@ -10,7 +10,16 @@ jobs:
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
       - run: dotnet cake --target build --configuration Release
-      - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
       - run: dotnet cake --target artifacts/lib --configuration Release --no-build
-    permissions:
-      actions: write
+      - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            artifacts/pkg/*.nupkg
+            artifacts/pkg/*.snupkg
+          name: packages
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: artifacts/lib/*.zip
+          name: libs

@@ -14,12 +14,6 @@ foreach(var project in projects) {
 
         CopyFileToDirectory(pkgPath, paths.Packages());
         CopyFileToDirectory(spkgPath, paths.Packages());
-
-        if(args.IsCi()) {
-            Information("Running on GitHub Actions, will upload artifacts [{0}, {1}]", pkgPath.GetFilename(), spkgPath.GetFilename());
-            GitHubActions.Commands.UploadArtifact(paths.Packages().CombineWithFilePath(pkgPath.GetFilename()), pkgPath.GetFilename().ToString()).Wait();
-            GitHubActions.Commands.UploadArtifact(paths.Packages().CombineWithFilePath(spkgPath.GetFilename()), spkgPath.GetFilename().ToString()).Wait();
-        }
     }).IsDependentOn(project.TaskName("pack"))
       .WithCriteria(args.Configuration() is "Release", "Configuration is not 'Release'");
 
@@ -27,7 +21,6 @@ foreach(var project in projects) {
 }
 
 var mainLibTask = Task("artifacts/lib");
-
 
 foreach(var project in projects) {
     var task = Task(project.TaskName("artifacts/lib")).Does(() => {
@@ -42,11 +35,6 @@ foreach(var project in projects) {
             Information("Will create archive {0} from directory {1}");
 
             Zip(dir, targetArchive);
-
-            if(args.IsCi()) {
-                Information("Running on GitHub Actions, will upload artifact {0}", archiveName);
-                GitHubActions.Commands.UploadArtifact(targetArchive, archiveName).Wait();
-            }
         });
     }).IsDependentOn(project.TaskName("build"))
       .WithCriteria(args.Configuration() is "Release", "Configuration is not 'Release'");

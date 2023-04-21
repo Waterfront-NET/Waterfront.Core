@@ -1,7 +1,9 @@
 #load build/tasks/*.cake
+using System.Text.Json;
 #load build/data/arguments.cake
 #load build/data/paths.cake
 #load build/data/version.cake
+#load build/data/arguments.cake
 
 Setup(ctx => {
 
@@ -11,6 +13,9 @@ Setup(ctx => {
 
     EnsureDirectoryExists(paths.Libraries());
     EnsureDirectoryExists(paths.Packages());
+
+    Information("GitHub actions debug info:\n{0}",
+    JsonSerializer.Serialize(GitHubActions.Environment.Runtime));
 });
 
 RunTarget(args.Target());
