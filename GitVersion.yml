@@ -1,14 +1,19 @@
-mode: ContinuousDelivery
 next-version: 1.0.0
+mode: Mainline
 branches:
+  master:
+    regex: master
+    tag: ''
+    increment: Minor
+    source-branches: [develop]
   develop:
-    increment: Patch
+    mode: ContinuousDeployment
     regex: develop
-    source-branches:
-      - feature
-      - master
-    is-release-branch: false
-    is-mainline: false
-ignore:
-  sha: []
-merge-message-formats: {}
+    tag: alpha
+    increment: Patch
+    source-branches: [master, feature]
+  feature:
+    mode: ContinuousDeployment
+    regex: ^feature\/
+    increment: None
+    source-branches: [master, develop]
