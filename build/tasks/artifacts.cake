@@ -42,3 +42,28 @@ foreach(var project in projects) {
 
     mainLibTask.IsDependentOn(task);
 }
+
+Task("artifacts/push-nuget-pkg").Does(() => {
+    var packageFiles = GetFiles(paths.Packages().Combine("*").ToString());
+
+    if(packageFiles.Count() is 0) {
+        throw new Exception("Nothing to push");
+    }
+
+    Information("Will push the following packages to NuGet: [{0}]", string.Join(", ", packageFiles.Select(file => file.GetFilename())));
+
+    packageFiles.ToList().ForEach(file => {
+        NuGetPush(file, new NuGetPushSettings {
+            ApiKey = EnvironmentVariable("NUGET_API_KEY", string.Empty),
+            Source = "https://api.nuget.org/v3/index.json"
+        });
+    });
+}).IsDependentOn("artifacts/pkg");
+
+Task("artifacts/push-release-asset").Does(() => {
+    var libFiles = GetFiles(paths.Libraries().Combine("*").ToString());
+
+    libFiles.ToList().ForEach(file => {
+
+    });
+});

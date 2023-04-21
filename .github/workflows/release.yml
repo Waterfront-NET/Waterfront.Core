@@ -1,8 +1,12 @@
-on:
-  push:
-    tags:
-      - v*
-      - V*
+on: [] # disabled
+# push:
+#   tags:
+#     - v*
+#     - V*
 jobs:
   create-release-draft:
     runs-on: ubuntu-latest
+  push-nuget-packages:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
