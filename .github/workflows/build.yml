@@ -1,12 +1,10 @@
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
       - run: dotnet cake --target build --configuration Release
@@ -14,11 +12,8 @@ jobs:
       - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
       - uses: actions/upload-artifact@v3
         with:
-          path: |
-            artifacts/pkg/*.nupkg
-            artifacts/pkg/*.snupkg
+          path: artifacts/pkg/*.{nupkg,snupkg}
           name: packages
-
       - uses: actions/upload-artifact@v3
         with:
           path: artifacts/lib/*.zip

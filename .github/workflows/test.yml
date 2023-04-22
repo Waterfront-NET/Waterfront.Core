@@ -1,0 +1,13 @@
+on: [push]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [:common:test, :core:test]
+    steps:
+      - uses: actions/checkout@v3
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v3
+      - run: dotnet tool restore
+      - run: dotnet cake --target ${{ matrix.target }} --configuration Release
