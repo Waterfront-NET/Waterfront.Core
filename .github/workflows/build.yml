@@ -12,7 +12,9 @@ jobs:
       - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
       - uses: actions/upload-artifact@v3
         with:
-          path: artifacts/pkg/*.{nupkg,snupkg}
+          path: |
+            artifacts/pkg/*.nupkg
+            artifacts/pkg/*.snupkg
           name: packages
       - uses: actions/upload-artifact@v3
         with:
