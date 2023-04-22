@@ -2,7 +2,7 @@
 
 var mainPkgTask = Task("artifacts/pkg");
 
-foreach(var project in projects) {
+foreach(var project in projects.Where(p => !p.IsTestProject())) {
     var task = Task(project.TaskName("artifacts/pkg")).Does(() => {
         Information("Copying NuGet packages for project {0} to output directory", project.Name);
 
