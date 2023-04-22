@@ -22,7 +22,7 @@ foreach(var project in projects) {
 
 var mainLibTask = Task("artifacts/lib");
 
-foreach(var project in projects) {
+foreach(var project in from p in projects where !p.IsTestProject() select p) {
     var task = Task(project.TaskName("artifacts/lib")).Does(() => {
         var dirs = GetDirectories(project.Directory().Combine("bin/" + args.Configuration() + "/*").ToString());
 

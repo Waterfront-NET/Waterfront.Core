@@ -4,10 +4,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [':common:test', ':core:test']
+        target: [common, core]
     steps:
       - uses: actions/checkout@v3
         with: { fetch-depth: 0 }
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - run: dotnet cake --target ${{ matrix.target }} --configuration Release
+      - run: dotnet cake --target :${{ matrix.target }}.tests:test --configuration Release

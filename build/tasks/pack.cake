@@ -5,7 +5,7 @@
 
 var mainPackTask = Task("pack");
 
-foreach (var project in projects) {
+foreach (var project in from p in projects where !p.IsTestProject() select p) {
     var task = Task(project.TaskName("pack")).Does(() => {
         Information("Running .NET pack for project {0} with configuration {1}", project.Name, args.Configuration());
         DotNetPack(project.Path.ToString(), new DotNetPackSettings {
