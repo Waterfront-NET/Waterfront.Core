@@ -43,6 +43,17 @@ foreach(var project in from p in projects where !p.IsTestProject() select p) {
     mainLibTask.IsDependentOn(task);
 }
 
+Task("artifacts/push/nuget").Does(() => {
+    var packages = GetFiles(paths.Packages().Combine("*.{nupkg,snupkg}").ToString()).ToList();
+    packages.ForEach(package => {
+        NuGetPush(package, new NuGetPushSettings {
+            ApiKey = EnvironmentVariable("NUGET_API_KEY", string.Empty),
+            Source = "https://api.nuget.org/v3/index.json"
+        });
+    });
+});
+Task("artifacts/push/release-assets");
+
 Task("artifacts/push-nuget-pkg").Does(() => {
     var packageFiles = GetFiles(paths.Packages().Combine("*").ToString());
 
@@ -60,10 +71,19 @@ Task("artifacts/push-nuget-pkg").Does(() => {
     });
 }).IsDependentOn("artifacts/pkg");
 
-Task("artifacts/push-release-asset").Does(() => {
+Task("artifacts/push-release-assets").Does(() => {
     var libFiles = GetFiles(paths.Libraries().Combine("*").ToString());
 
     libFiles.ToList().ForEach(file => {
+        GitReleaseManagerAddAssets(
+            args.GithubToken(),
+            args.RepoOwner(),
+            args.RepoName(),
+            version.SemVer,
+            string.Empty,
+            new GitReleaseManagerAddAssetsSettings {
 
+            }
+        );
     });
 });

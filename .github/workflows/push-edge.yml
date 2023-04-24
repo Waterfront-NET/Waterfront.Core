@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v3
+      - run: ./build.ps1 --target test
+        shell: pwsh
+  build:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v3
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v3
+      - run: ./build.ps1 --target build --configuration Release
+        shell: pwsh
+      - run: ./build.ps1 --target artifacts/pkg --configuration Release --no-build
+        shell: pwsh
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            artifacts/pkg/*.nupkg
+            artifacts/pkg/*.snupkg
+          name: packages
+  push:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: packages
+          path: artifacts/pkg
+      - run: ./build.ps1 --target artifacts/push/nuget
