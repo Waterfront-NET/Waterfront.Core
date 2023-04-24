@@ -29,7 +29,7 @@ foreach(var project in from p in projects where !p.IsTestProject() select p) {
         Information("Source directories found: [{0}]", string.Join(", ", dirs.Select(dir => dir.GetDirectoryName())));
 
         dirs.ToList().ForEach(dir => {
-            var archiveName = $"{project.Name}_{version.SemVer}_{dir.GetDirectoryName().ToString()}.zip";
+            var archiveName = $"{project.Name}.{version.SemVer}.zip";
             var targetArchive = paths.Libraries().CombineWithFilePath(archiveName);
 
             Information("Will create archive {0} from directory {1}", archiveName, dir);

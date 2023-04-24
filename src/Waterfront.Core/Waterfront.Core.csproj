@@ -4,12 +4,6 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>$(SEMVER)</Version>
-        <InformationalVersion>$(INFO_VER)</InformationalVersion>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>portable</DebugType>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
