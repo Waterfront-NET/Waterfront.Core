@@ -40,3 +40,4 @@ jobs:
           name: packages
           path: artifacts/pkg
       - run: ./build.ps1 --target artifacts/push/nuget
+        shell: pwsh
