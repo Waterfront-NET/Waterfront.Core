@@ -44,7 +44,7 @@ foreach(var project in from p in projects where !p.IsTestProject() select p) {
 }
 
 Task("artifacts/push/nuget").Does(() => {
-    var packages = GetFiles(paths.Packages().Combine("*.{nupkg,snupkg}").ToString()).ToList();
+    var packages = GetFiles(paths.Packages().Combine("*.nupkg").ToString()).ToList();
     packages.ForEach(package => {
         NuGetPush(package, new NuGetPushSettings {
             ApiKey = EnvironmentVariable("NUGET_API_KEY", string.Empty),
