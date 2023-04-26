@@ -53,17 +53,32 @@ Task("artifacts/push/nuget").Does(() => {
     });
 });
 
-Task("artifacts/push/github").Does(() => GetFiles(
+Task("artifacts/push/github").Does(() => {
+    if(!DotNetNuGetHasSource("github")) {
+        DotNetNuGetAddSource("github", new DotNetNuGetSourceSettings {
+            UserName = "USERNAME",
+            Password = EnvironmentVariable("GITHUB_NUGET_PKG_TOKEN"),
+            StorePasswordInClearText = true,
+            Source = "https://nuget.pkg.github.com/Waterfront-NET/index.json"
+        });
+    }
+
+    GetFiles(
     paths.Packages()
          .Combine("*.nupkg")
          .ToString()
-).ToList()
- .ForEach(file => {
-    NuGetPush(file, new NuGetPushSettings {
-        ApiKey = EnvironmentVariable("GITHUB_TOKEN", string.Empty),
-        Source = "https://nuget.pkg.github.com/Waterfront-NET/index.json",
+    ).ToList()
+     .ForEach(file => {
+        /* NuGetPush(file, new NuGetPushSettings {
+            ApiKey = EnvironmentVariable("GITHUB_TOKEN", string.Empty),
+            Source = "https://nuget.pkg.github.com/Waterfront-NET/index.json",
+        }); */
+
+        DotNetNuGetPush(file, new DotNetNuGetPushSettings {
+            Source = "github",
+        });
     });
-}));
+});
 
 Task("artifacts/push/release-assets");
 

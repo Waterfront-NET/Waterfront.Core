@@ -45,4 +45,4 @@ jobs:
       - run: ./build.ps1 --target artifacts/push/github
         shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_NUGET_PKG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
