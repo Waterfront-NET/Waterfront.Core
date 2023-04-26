@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-dotnet@v3
       - run: ./build.ps1 --target build --configuration Release
         shell: pwsh
-      - run: ./build.ps1 --target artifacts/pkg --configuration Release --no-build
+      - run: ./build.ps1 --target pack --configuration Release --no-build
         shell: pwsh
       - uses: actions/upload-artifact@v3
         with:

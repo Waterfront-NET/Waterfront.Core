@@ -1,5 +1,15 @@
 #load ../data/*.cake
 
+
+/*
+Tasks outline:
+    artifacts/pkg => Copy NuGet packages to the artifacts/pkg folder if configuration is "Release"
+    artifacts/lib => Copy build libraries output to the artifacts/lib folder if configuration is "Release"
+    artifacts/push/nuget => Push all packages from artifacts/pkg folder to nuget.org package registry
+    artifacts/push/github => Push all packages from artifacts/pkg folder to github.com package registry
+    artifacts/push/myget => Push all packages from artifacts/pkg folder to myget.org package registry
+*/
+
 var mainPkgTask = Task("artifacts/pkg");
 
 foreach(var project in projects.Where(p => !p.IsTestProject())) {
@@ -100,7 +110,7 @@ Task("artifacts/push-nuget-pkg").Does(() => {
     });
 }).IsDependentOn("artifacts/pkg");
 
-Task("artifacts/push-release-assets").Does(() => {
+/* Task("artifacts/push-release-assets").Does(() => {
     var libFiles = GetFiles(paths.Libraries().Combine("*").ToString());
 
     libFiles.ToList().ForEach(file => {
@@ -115,4 +125,4 @@ Task("artifacts/push-release-assets").Does(() => {
             }
         );
     });
-});
+}); */

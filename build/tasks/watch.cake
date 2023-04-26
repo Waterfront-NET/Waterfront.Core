@@ -20,4 +20,5 @@ Task("watch").Does(() => {
             });
         }
     });
-}).IsDependentOn("build");
+}).IsDependentOn(":common:build")
+  .IsDependentOn(":core:build");

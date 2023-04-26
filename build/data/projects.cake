@@ -1,39 +1,32 @@
 #load paths.cake
+using System.Xml;
 
-var projects = new List<BuildProject> {
+static List<BuildProject> projects;
+
+projects = new List<BuildProject> {
     new BuildProject {
         Name = "Waterfront.Common",
         Path = paths.Source().CombineWithFilePath("Waterfront.Common/Waterfront.Common.csproj")
     },
     new BuildProject {
         Name = "Waterfront.Core",
-        Path = paths.Source().CombineWithFilePath("Waterfront.Core/Waterfront.Core.csproj"),
-        DependencyNames = {"Waterfront.Common"}
+        Path = paths.Source().CombineWithFilePath("Waterfront.Core/Waterfront.Core.csproj")
     },
     new BuildProject {
         Name = "Waterfront.Common.Tests",
         Path = paths.Tests().CombineWithFilePath("Waterfront.Common.Tests/Waterfront.Common.Tests.csproj"),
-        DependencyNames = {"Waterfront.Common"}
     },
     new BuildProject {
         Name = "Waterfront.Core.Tests",
         Path = paths.Tests().CombineWithFilePath("Waterfront.Core.Tests/Waterfront.Core.Tests.csproj"),
-        DependencyNames = {"Waterfront.Core"}
     }
 };
 
-projects.ForEach(p => p.ResolveDependencies(projects));
-
 class BuildProject {
+    private List<BuildProject> _dependencies;
+
     public string Name { get; init; }
     public FilePath Path { get; init; }
-    public List<BuildProject> Dependencies { get; }
-    public List<string> DependencyNames { get; }
-
-    public BuildProject() {
-        Dependencies = new List<BuildProject>();
-        DependencyNames = new List<string>();
-    }
 
     public DirectoryPath Directory() => Path.GetDirectory();
 
@@ -51,25 +44,43 @@ class BuildProject {
                                                                                           .CombineWithFilePath($"{Name}.{version}.snupkg");
 
     public string ShortName() {
-        return Name.Replace("Waterfront.", "").ToLowerInvariant();
+        return Name.Replace("Waterfront.", string.Empty).ToLowerInvariant();
     }
 
     public string TaskName(string task) {
         return $":{ShortName()}:{task}";
     }
 
-    public bool IsTestProject() => Name.EndsWith(".Tests");
+    public bool IsTestProject() => Directory().GetParent()
+                                              .GetDirectoryName() is "test";
 
-    public BuildProject GetMainProject() => IsTestProject() ? Dependencies.First() : throw new InvalidOperationException("Not a test project");
+    public List<BuildProject> Dependencies() {
+        if(_dependencies == null) {
+            _dependencies = new List<BuildProject>();
+            var doc = new XmlDocument();
+            doc.Load(Path.ToString());
 
-    public void ResolveDependencies(List<BuildProject> projects) {
-        Dependencies.Clear();
-        Dependencies.AddRange(DependencyNames.Select(name => {
-            var dep = projects.Find(x => x.Name == name);
-            if(dep == null) {
-                throw new Exception($"Depencency project of {Name} with name {name} was not found in the list of projects");
+            var projectReferenceNodes = doc.SelectNodes("//ProjectReference");
+            if(projectReferenceNodes != null) {
+                foreach(XmlNode node in projectReferenceNodes) {
+                    var includeAttr = node.Attributes.GetNamedItem("Include");
+                    if(includeAttr == null) {
+                        throw new Exception($"Found project reference node in project {Name}, but could not find Include attribute");
+                    }
+
+                    string relativePath = includeAttr.Value;
+                    FilePath absolutePath = FilePath.FromString(relativePath).MakeAbsolute(Directory());
+                    BuildProject dependencyProject = projects.Find(project => project.Path == absolutePath);
+
+                    if(dependencyProject == null) {
+                        throw new Exception($"Dependency {absolutePath.GetFilenameWithoutExtension()} of the project {Name} could not be found");
+                    }
+
+                    _dependencies.Add(dependencyProject);
+                }
             }
-            return dep;
-        }));
+        }
+
+        return _dependencies;
     }
 }

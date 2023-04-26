@@ -1,4 +1,4 @@
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -7,9 +7,10 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: actions/setup-dotnet@v3
       - run: dotnet tool restore
-      - run: dotnet cake --target build --configuration Release
-      - run: dotnet cake --target artifacts/lib --configuration Release --no-build
-      - run: dotnet cake --target artifacts/pkg --configuration Release --no-build
+      - run: ./build.ps1 --target build --configuration Release
+        shell: pwsh
+      - run: ./build.ps1 --target pack --configuration Release --no-build
+        shell: pwsh
       - uses: actions/upload-artifact@v3
         with:
           path: |
@@ -19,4 +20,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           path: artifacts/lib/*.zip
-          name: libs
+          name: libraries
