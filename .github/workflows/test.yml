@@ -12,4 +12,4 @@ jobs:
       - run: >-
           ./build.ps1 --target :${{ matrix.target }}.tests:test --configuration Release
           --no-copy-artifacts
-        shell: powershell
+        shell: pwsh
