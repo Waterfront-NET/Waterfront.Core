@@ -52,6 +52,19 @@ Task("artifacts/push/nuget").Does(() => {
         });
     });
 });
+
+Task("artifacts/push/github").Does(() => GetFiles(
+    paths.Packages()
+         .Combine("*.nupkg")
+         .ToString()
+).ToList()
+ .ForEach(file => {
+    NuGetPush(file, new NuGetPushSettings {
+        ApiKey = EnvironmentVariable("GITHUB_TOKEN", string.Empty),
+        Source = "https://nuget.pkg.github.com/Waterfront-NET/index.json",
+    });
+}));
+
 Task("artifacts/push/release-assets");
 
 Task("artifacts/push-nuget-pkg").Does(() => {

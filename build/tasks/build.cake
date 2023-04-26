@@ -14,7 +14,6 @@ foreach (var project in projects) {
             NoIncremental = args.NoIncremental()
         });
     }).IsDependentOn(project.TaskName("restore"))
-      .IsDependentOn("set-version-env")
       .WithCriteria(() => !args.NoBuild());
     project.Dependencies.ForEach(dep => task.IsDependentOn(dep.TaskName("build")));
 
