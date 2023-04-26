@@ -44,3 +44,5 @@ jobs:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       - run: ./build.ps1 --target artifacts/push/github
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
