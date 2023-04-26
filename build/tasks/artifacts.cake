@@ -76,6 +76,7 @@ Task("artifacts/push/github").Does(() => {
 
         DotNetNuGetPush(file, new DotNetNuGetPushSettings {
             Source = "github",
+            ApiKey = EnvironmentVariable("GITHUB_NUGET_PKG_TOKEN")
         });
     });
 });
