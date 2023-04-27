@@ -7,3 +7,5 @@ TestResults/
 
 tools/
 /artifacts/
+
+*.DotSettings.user

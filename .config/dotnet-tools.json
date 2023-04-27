@@ -25,6 +25,12 @@
       "commands": [
         "dotnet-gitreleasemanager"
       ]
+    },
+    "coverlet.console": {
+      "version": "3.2.0",
+      "commands": [
+        "coverlet"
+      ]
     }
   }
 }
