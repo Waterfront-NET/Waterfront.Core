@@ -1,5 +1,4 @@
 ﻿using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Waterfront.Common.Tokens.Signing.CertificateProviders;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
@@ -15,7 +12,7 @@ namespace Waterfront.Core.Tokens.Definition;
 public class TokenDefinitionService : ITokenDefinitionService
 {
     private readonly ILogger<TokenDefinitionService> _logger;
-    private readonly IOptions<TokenOptions> _tokenOptions;
+    private readonly IOptions<TokenOptions>          _tokenOptions;
 
     public TokenDefinitionService(
         ILogger<TokenDefinitionService> logger,

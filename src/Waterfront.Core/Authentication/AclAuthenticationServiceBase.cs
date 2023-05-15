@@ -1,8 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
 using Waterfront.Common.Authentication;
-using Waterfront.Common.Tokens;
 using Waterfront.Common.Tokens.Requests;
 
 namespace Waterfront.Core.Authentication;
@@ -11,9 +8,9 @@ public abstract class AclAuthenticationServiceBase<TOptions> : IAclAuthenticatio
 where TOptions : class
 {
     protected ILogger Logger { get; }
-    protected IOptions<TOptions> Options { get; }
+    protected TOptions Options { get; }
 
-    protected AclAuthenticationServiceBase(ILoggerFactory loggerFactory, IOptions<TOptions> options)
+    protected AclAuthenticationServiceBase(ILoggerFactory loggerFactory, TOptions options)
     {
         Logger  = loggerFactory.CreateLogger(GetType());
         Options = options;

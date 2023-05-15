@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Waterfront.Common.Acl;
+﻿namespace Waterfront.Common.Acl;
 
 #pragma warning disable CS8618
 

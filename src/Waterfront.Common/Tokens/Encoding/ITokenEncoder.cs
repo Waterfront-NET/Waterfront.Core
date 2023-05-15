@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Waterfront.Common.Tokens.Definition;
+﻿using Waterfront.Common.Tokens.Definition;
 
 namespace Waterfront.Common.Tokens.Encoding;
 

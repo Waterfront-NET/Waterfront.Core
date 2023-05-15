@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography.X509Certificates;
 using JWT.Algorithms;
 using JWT.Builder;
 using Microsoft.Extensions.Logging;

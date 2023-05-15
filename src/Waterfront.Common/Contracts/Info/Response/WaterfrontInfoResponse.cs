@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Waterfront.Common.Contracts.Info.Response;
+﻿namespace Waterfront.Common.Contracts.Info.Response;
 
 /// <summary>
 /// Placeholder for later use

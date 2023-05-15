@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Waterfront.Common.Tokens;
-using Waterfront.Common.Tokens.Requests;
+﻿using Waterfront.Common.Tokens.Requests;
 
 namespace Waterfront.Common.Authentication;
 

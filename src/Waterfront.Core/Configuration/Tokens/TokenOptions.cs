@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Waterfront.Core.Configuration.Tokens;
+﻿namespace Waterfront.Core.Configuration.Tokens;
 
 public class TokenOptions
 {

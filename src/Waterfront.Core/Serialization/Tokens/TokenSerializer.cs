@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using JWT;
 using Waterfront.Core.Serialization.Tokens.Converters;

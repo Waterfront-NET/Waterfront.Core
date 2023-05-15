@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Waterfront.Common.Acl;
-using Waterfront.Common.Tokens;
 using Waterfront.Common.Tokens.Requests;
 
 namespace Waterfront.Common.Authentication;

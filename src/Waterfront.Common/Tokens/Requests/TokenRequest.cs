@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Waterfront.Common.Authentication.Credentials;
+﻿using Waterfront.Common.Authentication.Credentials;
 
 namespace Waterfront.Common.Tokens.Requests;
 
