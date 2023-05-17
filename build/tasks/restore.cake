@@ -1,14 +1,14 @@
 #load ../data/projects.cake
-#load ../data/arguments.cake
+#load ../data/args.cake
 
 var mainRestoreTask = Task("restore");
 
 foreach (var project in projects) {
-    var task = Task(project.TaskName("restore")).Does(() => {
+    var task = Task(project.Task("restore")).Does(() => {
         DotNetRestore(project.Path.ToString(), new DotNetRestoreSettings {
             NoDependencies = true
         });
-    }).WithCriteria(() => !args.NoBuild());
+    }).WithCriteria(() => !args.NoBuild);
 
     mainRestoreTask.IsDependentOn(task);
 }

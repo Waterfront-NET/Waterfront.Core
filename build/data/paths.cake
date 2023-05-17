@@ -1,22 +1,14 @@
-var paths = new BuildPaths { Root = Context.Environment.WorkingDirectory };
+static BuildPaths paths;
+paths = new BuildPaths { Root = Context.Environment.WorkingDirectory };
 
 class BuildPaths {
     public DirectoryPath Root { get; init; }
-    public DirectoryPath Source() {
-        return Root.Combine("src");
-    }
-    public DirectoryPath Tests() {
-        return Root.Combine("test");
-    }
-    public FilePath Solution() {
-        return Root.CombineWithFilePath("Waterfront.sln");
-    }
 
-    public DirectoryPath Packages() {
-        return Root.Combine("artifacts/pkg");
-    }
+    public FilePath Solution => Root.CombineWithFilePath("Waterfront.Core.sln");
 
-    public DirectoryPath Libraries() {
-        return Root.Combine("artifacts/lib");
-    }
+    public DirectoryPath Source => Root.Combine("src");
+    public DirectoryPath Tests => Root.Combine("test");
+
+    public DirectoryPath Packages => Root.Combine("artifacts/pkg");
+    public DirectoryPath Libraries => Root.Combine("artifacts/lib");
 }

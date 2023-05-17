@@ -1,9 +1,12 @@
+#addin nuget:?package=Cake.Incubator&version=8.0.0
 #load paths.cake
+#load args.cake
+
 using System.Xml;
 
 static List<BuildProject> projects;
 
-projects = new List<BuildProject> {
+/* projects = new List<BuildProject> {
     new BuildProject {
         Name = "Waterfront.Common",
         Path = paths.Source().CombineWithFilePath("Waterfront.Common/Waterfront.Common.csproj")
@@ -20,67 +23,55 @@ projects = new List<BuildProject> {
         Name = "Waterfront.Core.Tests",
         Path = paths.Tests().CombineWithFilePath("Waterfront.Core.Tests/Waterfront.Core.Tests.csproj"),
     }
-};
+}; */
+
+projects = ParseSolution(paths.Solution).GetProjects()
+.Where(solutionProject => solutionProject.IsType(ProjectType.CSharp))
+.ToList()
+.Select(solutionProject => {
+    var path = solutionProject.Path.MakeAbsolute(paths.Solution.GetDirectory());
+
+    var parsedProject = ParseProject(path, args.Configuration);
+
+    var buildProject = new BuildProject {
+        Name = solutionProject.Name,
+        Path = path,
+        IsTest = parsedProject.IsTestProject()
+    };
+
+    parsedProject.ProjectReferences.ToList().ForEach(projectReference => {
+        var name = projectReference.FilePath.GetFilenameWithoutExtension().ToString();
+
+        var referenceBuildProject = new BuildProject {
+            Name = name,
+            Path = projectReference.FilePath
+        };
+
+        buildProject.References.Add(referenceBuildProject);
+    });
+
+    return buildProject;
+}).ToList();
 
 class BuildProject {
-    private List<BuildProject> _dependencies;
-
     public string Name { get; init; }
+    public string Shortname => Name.Replace("Waterfront.", string.Empty).ToLowerInvariant();
     public FilePath Path { get; init; }
+    public DirectoryPath Directory => Path.GetDirectory();
 
-    public DirectoryPath Directory() => Path.GetDirectory();
+    public bool IsTest { get; init; }
 
-    public DirectoryPath Bin(string configuration = "Debug", string framework = "net6.0") =>
-        Directory().Combine("bin")
-                   .Combine(configuration)
-                   .Combine(framework);
+    public List<BuildProject> References { get; } = new List<BuildProject>();
 
-    public FilePath PackagePath(string configuration, string version) => Directory().Combine("bin")
-                                                                                    .Combine(configuration)
-                                                                                    .CombineWithFilePath($"{Name}.{version}.nupkg");
-
-    public FilePath SymbolPackagePath(string configuration, string version) => Directory().Combine("bin")
-                                                                                          .Combine(configuration)
-                                                                                          .CombineWithFilePath($"{Name}.{version}.snupkg");
-
-    public string ShortName() {
-        return Name.Replace("Waterfront.", string.Empty).ToLowerInvariant();
+    public string Task(string task) {
+        return $":{Shortname}:{task}";
     }
 
-    public string TaskName(string task) {
-        return $":{ShortName()}:{task}";
+    public FilePath PackagePath(string configuration, string version) {
+        return Directory.CombineWithFilePath($"bin/{configuration}/{Name}.{version}.nupkg");
     }
 
-    public bool IsTestProject() => Directory().GetParent()
-                                              .GetDirectoryName() is "test";
-
-    public List<BuildProject> Dependencies() {
-        if(_dependencies == null) {
-            _dependencies = new List<BuildProject>();
-            var doc = new XmlDocument();
-            doc.Load(Path.ToString());
-
-            var projectReferenceNodes = doc.SelectNodes("//ProjectReference");
-            if(projectReferenceNodes != null) {
-                foreach(XmlNode node in projectReferenceNodes) {
-                    var includeAttr = node.Attributes.GetNamedItem("Include");
-                    if(includeAttr == null) {
-                        throw new Exception($"Found project reference node in project {Name}, but could not find Include attribute");
-                    }
-
-                    string relativePath = includeAttr.Value;
-                    FilePath absolutePath = FilePath.FromString(relativePath).MakeAbsolute(Directory());
-                    BuildProject dependencyProject = projects.Find(project => project.Path == absolutePath);
-
-                    if(dependencyProject == null) {
-                        throw new Exception($"Dependency {absolutePath.GetFilenameWithoutExtension()} of the project {Name} could not be found");
-                    }
-
-                    _dependencies.Add(dependencyProject);
-                }
-            }
-        }
-
-        return _dependencies;
+    public FilePath SymbolPackagePath(string configuration, string version) {
+        return Directory.CombineWithFilePath($"bin/{configuration}/{Name}.{version}.snupkg");
     }
 }

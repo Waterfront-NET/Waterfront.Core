@@ -1,60 +1,50 @@
 #load ../data/*.cake
 
-
-/*
-Tasks outline:
-    artifacts/pkg => Copy NuGet packages to the artifacts/pkg folder if configuration is "Release"
-    artifacts/lib => Copy build libraries output to the artifacts/lib folder if configuration is "Release"
-    artifacts/push/nuget => Push all packages from artifacts/pkg folder to nuget.org package registry
-    artifacts/push/github => Push all packages from artifacts/pkg folder to github.com package registry
-    artifacts/push/myget => Push all packages from artifacts/pkg folder to myget.org package registry
-*/
-
 var mainPkgTask = Task("artifacts/pkg");
 
-foreach(var project in projects.Where(p => !p.IsTestProject())) {
-    var task = Task(project.TaskName("artifacts/pkg")).Does(() => {
+foreach(var project in projects.Where(p => !p.IsTest)) {
+    var task = Task(project.Task("artifacts/pkg")).Does(() => {
         Information("Copying NuGet packages for project {0} to output directory", project.Name);
 
-        var pkgPath = project.PackagePath(args.Configuration(), version.SemVer);
-        var spkgPath = project.SymbolPackagePath(args.Configuration(), version.SemVer);
+        var pkgPath = project.PackagePath(args.Configuration, version.SemVer);
+        var spkgPath = project.SymbolPackagePath(args.Configuration, version.SemVer);
 
         Verbose("Source package path: {0}", pkgPath);
         Verbose("Source symbol package path: {0}", spkgPath);
 
-        CopyFileToDirectory(pkgPath, paths.Packages());
-        CopyFileToDirectory(spkgPath, paths.Packages());
-    }).IsDependentOn(project.TaskName("pack"))
-      .WithCriteria(args.Configuration() is "Release", "Configuration is not 'Release'");
+        CopyFileToDirectory(pkgPath, paths.Packages);
+        CopyFileToDirectory(spkgPath, paths.Packages);
+    }).IsDependentOn(project.Task("pack"))
+      .WithCriteria(args.Configuration is "Release", "Configuration is not 'Release'");
 
     mainPkgTask.IsDependentOn(task);
 }
 
 var mainLibTask = Task("artifacts/lib");
 
-foreach(var project in from p in projects where !p.IsTestProject() select p) {
-    var task = Task(project.TaskName("artifacts/lib")).Does(() => {
-        var dirs = GetDirectories(project.Directory().Combine("bin/" + args.Configuration() + "/*").ToString());
+foreach(var project in from p in projects where !p.IsTest select p) {
+    var task = Task(project.Task("artifacts/lib")).Does(() => {
+        var dirs = GetDirectories(project.Directory.Combine("bin/" + args.Configuration + "/*").ToString());
 
         Information("Source directories found: [{0}]", string.Join(", ", dirs.Select(dir => dir.GetDirectoryName())));
 
         dirs.ToList().ForEach(dir => {
             var archiveName = $"{project.Name}.{version.SemVer}.zip";
-            var targetArchive = paths.Libraries().CombineWithFilePath(archiveName);
+            var targetArchive = paths.Libraries.CombineWithFilePath(archiveName);
 
             Information("Will create archive {0} from directory {1}", archiveName, dir);
 
             Zip(dir, targetArchive);
         });
-    }).IsDependentOn(project.TaskName("build"))
-      .WithCriteria(args.Configuration() is "Release", "Configuration is not 'Release'");
+    }).IsDependentOn(project.Task("build"))
+      .WithCriteria(args.Configuration is "Release", "Configuration is not 'Release'");
 
 
     mainLibTask.IsDependentOn(task);
 }
 
 Task("artifacts/push/nuget").Does(() => {
-    var packages = GetFiles(paths.Packages().Combine("*.nupkg").ToString()).ToList();
+    var packages = GetFiles(paths.Packages.Combine("*.nupkg").ToString()).ToList();
     packages.ForEach(package => {
         NuGetPush(package, new NuGetPushSettings {
             ApiKey = EnvironmentVariable("NUGET_API_KEY", string.Empty),
@@ -74,7 +64,7 @@ Task("artifacts/push/github").Does(() => {
     }
 
     GetFiles(
-    paths.Packages()
+    paths.Packages
          .Combine("*.nupkg")
          .ToString()
     ).ToList()
@@ -94,7 +84,7 @@ Task("artifacts/push/github").Does(() => {
 Task("artifacts/push/release-assets");
 
 Task("artifacts/push-nuget-pkg").Does(() => {
-    var packageFiles = GetFiles(paths.Packages().Combine("*").ToString());
+    var packageFiles = GetFiles(paths.Packages.Combine("*").ToString());
 
     if(packageFiles.Count() is 0) {
         throw new Exception("Nothing to push");

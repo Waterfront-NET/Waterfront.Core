@@ -3,7 +3,7 @@
 #addin nuget:?package=Cake.Watch&version=0.2.3
 
 Task("watch").Does(() => {
-    var sourceDirPath = paths.Source().ToString();
+    var sourceDirPath = paths.Source.ToString();
     var watchSettings = new WatchSettings {
         Path = sourceDirPath,
         Pattern = "*.cs",

@@ -1,8 +1,7 @@
 #load build/tasks/*.cake
-#load build/data/arguments.cake
+#load build/data/args.cake
 #load build/data/paths.cake
 #load build/data/version.cake
-#load build/data/arguments.cake
 
 using System.Collections;
 using System.Text.Json;
@@ -27,8 +26,8 @@ Setup(ctx => {
         }
     }
 
-    EnsureDirectoryExists(paths.Libraries());
-    EnsureDirectoryExists(paths.Packages());
+    EnsureDirectoryExists(paths.Libraries);
+    EnsureDirectoryExists(paths.Packages);
 });
 
-RunTarget(args.Target());
+RunTarget(args.Target);

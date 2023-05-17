@@ -1,15 +1,15 @@
 #load ../data/projects.cake
-#load ../data/arguments.cake
+#load ../data/args.cake
 
 var mainTestTask = Task("test");
 
-foreach(var project in from p in projects where p.IsTestProject() select p) {
-    var task = Task(project.TaskName("test")).Does(() => {
+foreach(var project in from p in projects where p.IsTest select p) {
+    var task = Task(project.Task("test")).Does(() => {
         DotNetTest(project.Path.ToString(), new DotNetTestSettings {
-            Configuration = args.Configuration(),
+            Configuration = args.Configuration,
             NoBuild = true
         });
-    }).IsDependentOn(project.TaskName("build"));
+    }).IsDependentOn(project.Task("build"));
 
     mainTestTask.IsDependentOn(task);
 }
