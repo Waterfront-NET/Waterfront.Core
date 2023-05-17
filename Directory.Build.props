@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Waterfront-NET/Waterfront</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Waterfront-NET/Waterfront.Core</RepositoryUrl>
     <Description>Open Source authorization server for Docker registry</Description>
     <PackageTags>authentication;authorization;docker;registry;tokens</PackageTags>
   </PropertyGroup>
