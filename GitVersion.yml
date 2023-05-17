@@ -1,19 +1,4 @@
 next-version: 1.0.0
-mode: Mainline
-branches:
-  master:
-    regex: master
-    tag: ''
-    increment: Minor
-    source-branches: [develop]
-  develop:
-    mode: ContinuousDeployment
-    regex: develop
-    tag: alpha
-    increment: Patch
-    source-branches: [master, feature]
-  feature:
-    mode: ContinuousDeployment
-    regex: ^feature\/
-    increment: None
-    source-branches: [master, develop]
+mode: ContinuousDelivery
+assembly-versioning-scheme: MajorMinorPatchTag
+assembly-file-versioning-scheme: MajorMinorPatchTag

@@ -1,9 +1,11 @@
 #load build/tasks/*.cake
-using System.Text.Json;
 #load build/data/arguments.cake
 #load build/data/paths.cake
 #load build/data/version.cake
 #load build/data/arguments.cake
+
+using System.Collections;
+using System.Text.Json;
 
 Setup(ctx => {
     Information("Starting Waterfront build v{0} on branch {1} with commit {2}", version.SemVer, version.BranchName, version.ShortSha);
@@ -12,16 +14,18 @@ Setup(ctx => {
 
     Information("Setting version environment variables...");
 
-    Environment.SetEnvironmentVariable("SEMVER", version.SemVer);
-    Environment.SetEnvironmentVariable("INFO_VER", version.InformationalVersion);
-    Environment.SetEnvironmentVariable("NUGET_VER", version.NuGetVersion);
-    Environment.SetEnvironmentVariable("GIT_BRANCH", version.BranchName);
-    Environment.SetEnvironmentVariable("BRANCH", version.BranchName);
-    Environment.SetEnvironmentVariable("GIT_COMMIT_HASH", version.Sha);
-    Environment.SetEnvironmentVariable("GIT_COMMIT_HASH_SHORT", version.ShortSha);
-    Environment.SetEnvironmentVariable("COMMIT_SHORT_SHA", version.ShortSha);
+    Environment.SetEnvironmentVariable("GitVersion_SemVer", version.SemVer);
+    Environment.SetEnvironmentVariable("GitVersion_InformationalVersion", version.InformationalVersion);
+    Environment.SetEnvironmentVariable("GitVersion_NuGetVersion", version.NuGetVersion);
+    Environment.SetEnvironmentVariable("GitVersion_AssemblyVersion", version.AssemblySemVer);
+    Environment.SetEnvironmentVariable("GitVersion_AssemblyFileVersion", version.AssemblySemFileVer);
 
-    Verbose("Version environment variables were set:\nSEMVER={0}\nINFO_VER={1}\nNUGET_VER={2}\nGIT_BRANCH={3}\nBRANCH={4}\nGIT_COMMIT_HASH={5}\nGIT_COMMIT_HASH_SHORT={6}\nCOMMIT_SHORT_SHA={7}", version.SemVer,version.InformationalVersion, version.NuGetVersion, version.BranchName, version.BranchName,version.Sha,version.ShortSha,version.ShortSha);
+    foreach(DictionaryEntry env in Environment.GetEnvironmentVariables()) {
+
+        if(((string)env.Key).StartsWith("GitVersion_")) {
+            Verbose("GitVersion variable: {0}={1}", env.Key, env.Value);
+        }
+    }
 
     EnsureDirectoryExists(paths.Libraries());
     EnsureDirectoryExists(paths.Packages());
