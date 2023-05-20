@@ -11,12 +11,15 @@ public readonly struct AclAuthorizationResult
 
     public AclAuthorizationResult(string id)
     {
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
         Id = id;
         AuthorizedScopes = new List<TokenRequestScope>();
         ForbiddenScopes = new List<TokenRequestScope>();
     }
-
-    public AclAuthorizationResult() : this(string.Empty) { }
 
     public AclAuthorizationResult(TokenRequest request) : this(request.Id) { }
 }
