@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography.X509Certificates;
 using Waterfront.Common.Acl;
 using Waterfront.Common.Tokens.Requests;
 
@@ -6,7 +7,7 @@ namespace Waterfront.Common.Authentication;
 
 public readonly struct AclAuthenticationResult
 {
-    [MemberNotNullWhen(true, "User")]
+    [MemberNotNullWhen(true, nameof(User))]
     public bool IsSuccessful => User != null;
 
     /// <summary>
@@ -19,15 +20,22 @@ public readonly struct AclAuthenticationResult
     /// </summary>
     public AclUser? User { get; init; }
 
-    public static AclAuthenticationResult Failed(string id) =>
-        new AclAuthenticationResult { Id = id };
+    [Obsolete("Use AclAuthenticationResult.Fail(string) instead")]
+    public static AclAuthenticationResult Failed(string id) => Fail(id);
 
-    public static AclAuthenticationResult Failed(TokenRequest request) =>
-        new AclAuthenticationResult { Id = request.Id };
+    public static AclAuthenticationResult Fail(string id) => new AclAuthenticationResult {Id = id};
 
-    public override string ToString()
-    {
-        return $"AuthnResult{{Id({Id}) User({User?.Username})}}";
-    }
+    [Obsolete("Use AclAuthenticationResult.Fail(TokenRequest) instead")]
+    public static AclAuthenticationResult Failed(TokenRequest request) => Fail(request);
+
+    public static AclAuthenticationResult Fail(TokenRequest request) => Fail(request.Id);
+
+    public static AclAuthenticationResult Success(string id, AclUser user) => new AclAuthenticationResult {
+        Id = id,
+        User = user
+    };
+
+    public static AclAuthenticationResult Success(TokenRequest request, AclUser user) => Success(request.Id, user);
+
+    public override string ToString() => $"AuthnResult{{Id({Id}) User({User?.Username})}}";
 }
-
