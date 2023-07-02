@@ -2,7 +2,7 @@
 
 namespace Waterfront.Common.Authentication.Credentials;
 
-public readonly struct BasicCredentials
+public readonly struct BasicCredentials : ITokenRequestCredentials
 {
     public string Username { get; init; }
     public string Password { get; init; }

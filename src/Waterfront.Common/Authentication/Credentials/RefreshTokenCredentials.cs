@@ -1,6 +1,6 @@
 ﻿namespace Waterfront.Common.Authentication.Credentials;
 
-public readonly struct RefreshTokenCredentials
+public readonly struct RefreshTokenCredentials : ITokenRequestCredentials
 {
     public string Token { get; init; }
 
