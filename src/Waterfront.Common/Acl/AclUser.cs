@@ -1,7 +1,10 @@
-﻿namespace Waterfront.Common.Acl;
+﻿using System.Diagnostics;
+
+namespace Waterfront.Common.Acl;
 
 #pragma warning disable CS8618
 
+[DebuggerDisplay("{ToString()}")]
 public class AclUser
 {
     /// <summary>
@@ -13,4 +16,6 @@ public class AclUser
     /// List of policies user is authorized to use
     /// </summary>
     public IEnumerable<string> Acl { get; init; }
+
+    public override string ToString() => $"AclUser({Username}) [{string.Join(", ", Acl)}]";
 }

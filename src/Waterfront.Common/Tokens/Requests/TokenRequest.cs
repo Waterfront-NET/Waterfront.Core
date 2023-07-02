@@ -25,7 +25,7 @@ public readonly struct TokenRequest
     /// <summary>
     /// Optional client id
     /// </summary>
-    public string? Client { get; init; }
+    public string? ClientId { get; init; }
 
     /// <summary>
     /// Optional indicator that client wants to acquire a refresh token
