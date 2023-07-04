@@ -50,7 +50,7 @@ public class TokenEncoder : ITokenEncoder
                                        .ExpirationTime(exp.ToUnixTimeSeconds())
                                        .AddHeader(HeaderName.KeyId, certificate.KeyId())
                                        .AddClaim("access", definition.Access)
-                                       .WithJsonSerializer(TokenSerializer.Instance);
+                                       .WithJsonSerializer(TokenJsonSerializer.Instance);
 
         return builder.Encode();
     }
