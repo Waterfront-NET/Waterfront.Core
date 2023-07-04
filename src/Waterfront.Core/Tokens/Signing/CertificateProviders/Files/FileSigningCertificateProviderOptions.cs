@@ -6,7 +6,4 @@ public class FileSigningCertificateProviderOptions
 {
     public string CertificatePath { get; set; }
     public string PrivateKeyPath { get; set; }
-
-    internal string GetFullCertificatePath() => Path.GetFullPath(CertificatePath);
-    internal string GetFullPrivateKeyPath() => Path.GetFullPath(PrivateKeyPath);
 }

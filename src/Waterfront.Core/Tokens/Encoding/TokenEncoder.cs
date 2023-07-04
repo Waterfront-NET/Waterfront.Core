@@ -2,7 +2,6 @@
 using JWT.Algorithms;
 using JWT.Builder;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Waterfront.Common.Tokens.Definition;
 using Waterfront.Common.Tokens.Encoding;
 using Waterfront.Common.Tokens.Signing.CertificateProviders;
@@ -14,44 +13,43 @@ namespace Waterfront.Core.Tokens.Encoding;
 
 public class TokenEncoder : ITokenEncoder
 {
-    private readonly ILogger<TokenEncoder>       _logger;
-    private readonly IOptions<TokenOptions>      _options;
-    private readonly ISigningCertificateProvider _certificateProvider;
+    protected ILogger Logger { get; }
+    protected ISigningCertificateProvider SigningCertificateProvider { get; }
 
     public TokenEncoder(
-        ILogger<TokenEncoder> logger,
-        IOptions<TokenOptions> options,
-        ISigningCertificateProvider certificateProvider
+        ILoggerFactory loggerFactory,
+        ISigningCertificateProvider signingCertificateProvider
     )
     {
-        _logger = logger;
-        _options = options;
-        _certificateProvider = certificateProvider;
+        Logger                     = loggerFactory.CreateLogger(GetType());
+        SigningCertificateProvider = signingCertificateProvider;
     }
 
-    public async ValueTask<string> EncodeTokenAsync(TokenDefinition definition)
+    public virtual async ValueTask<string> EncodeTokenAsync(TokenDefinition definition)
     {
-        _logger.LogDebug("Encoding token definition: {@Definition}", definition);
+        Logger.LogDebug("Encoding token definition {Id}", definition.Id);
 
-        DateTimeOffset iat = DateTimeOffset.UtcNow;
-        DateTimeOffset exp = DateTimeOffset.UtcNow.Add(_options.Value.Lifetime);
+        X509Certificate2? certificate =
+        await SigningCertificateProvider.GetCertificateAsync(definition);
 
-        _logger.LogDebug("Issued at: {@Iat}\nExpires at: {@Exp}", iat, exp);
+        if ( certificate == null )
+        {
+            throw new Exception(
+                "Could not retrieve certificate to sign token definition " + definition.Id
+            );
+        }
 
-        X509Certificate2 certificate = await _certificateProvider.GetCertificateAsync();
-
-        JwtBuilder builder = JwtBuilder.Create()
-                                       .WithAlgorithm(new RS256Algorithm(certificate))
-                                       .Id(definition.Id)
-                                       .Subject(definition.Subject)
-                                       .Audience(definition.Service)
-                                       .Issuer(_options.Value.Issuer)
-                                       .IssuedAt(iat.ToUnixTimeSeconds())
-                                       .ExpirationTime(exp.ToUnixTimeSeconds())
-                                       .AddHeader(HeaderName.KeyId, certificate.KeyId())
-                                       .AddClaim("access", definition.Access)
-                                       .WithJsonSerializer(TokenJsonSerializer.Instance);
-
-        return builder.Encode();
+        return JwtBuilder.Create()
+                         .WithAlgorithm(new RS256Algorithm(certificate))
+                         .Id(definition.Id)
+                         .Subject(definition.Subject)
+                         .Audience(definition.Service)
+                         .Issuer(definition.Issuer)
+                         .IssuedAt(definition.IssuedAt.ToUnixTimeSeconds())
+                         .ExpirationTime(definition.ExpiresAt.ToUnixTimeSeconds())
+                         .AddHeader(HeaderName.KeyId, certificate.KeyId())
+                         .AddClaim("access", definition.Access)
+                         .WithJsonSerializer(TokenJsonSerializer.Instance)
+                         .Encode();
     }
 }
