@@ -9,9 +9,10 @@ namespace Waterfront.Core.Tokens.Signing.CertificateProviders;
 /// <summary>
 /// Implements basic caching for derived <see cref="ISigningCertificateProvider"/> based on <see cref="TokenDefinition.Service"/> value
 /// </summary>
-public abstract class SigningCertificateProviderBase : ISigningCertificateProvider
+public abstract class SigningCertificateProviderBase : ISigningCertificateProvider, IDisposable
 {
     private readonly Dictionary<string, X509Certificate2> _serviceCertificateMap;
+    private          bool                                 _disposed;
 
     protected ILogger Logger { get; }
 
@@ -23,6 +24,11 @@ public abstract class SigningCertificateProviderBase : ISigningCertificateProvid
 
     public virtual async ValueTask<X509Certificate2?> GetCertificateAsync(TokenDefinition tokenDefinition)
     {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(SigningCertificateProviderBase));
+        }
+
         string service = tokenDefinition.Service;
 
         Logger.LogDebug("Retrieving certificate for token {Id}, Service: {Service}", tokenDefinition.Id, service);
@@ -50,6 +56,11 @@ public abstract class SigningCertificateProviderBase : ISigningCertificateProvid
 
     public virtual async ValueTask<PublicKey?> GetPublicKeyAsync(TokenDefinition tokenDefinition)
     {
+        if (_disposed)
+        {
+            throw new ObjectDisposedException(nameof(SigningCertificateProviderBase));
+        }
+
         Logger.LogDebug(
             "Getting public key for token {Id}, Service: {Service}",
             tokenDefinition.Id,
@@ -61,4 +72,22 @@ public abstract class SigningCertificateProviderBase : ISigningCertificateProvid
     }
 
     protected abstract ValueTask<X509Certificate2?> GetCertificateAsyncImpl(string service);
+
+    protected void InvalidateCache()
+    {
+        _serviceCertificateMap.Values.ToList().ForEach(x => x.Dispose());
+        _serviceCertificateMap.Clear();
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        InvalidateCache();
+
+        _disposed = true;
+    }
 }

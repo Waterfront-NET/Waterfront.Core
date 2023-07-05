@@ -34,6 +34,31 @@ foreach (var project in from p in projects where !p.IsTest select p) {
                 CopyFileToDirectory(package, targetDirectory);
             });
         }
+
+        if(args.Configuration is "Debug" && !args.NoCopyArtifacts) {
+            var sourceDirectory = project.Directory.Combine("bin/Release");
+            var packageGlobPattern = sourceDirectory.Combine($"{project.Name}.{version.SemVer}.nupkg").ToString();
+            Debug("Glob pattern: {0}", packageGlobPattern);
+            var packages = GetFiles(packageGlobPattern);
+            var localRepoDirectory = DirectoryPath.FromString(EnvironmentVariable("USERPROFILE")).Combine(".nuget/packages");
+
+            Verbose("Pushing debug version of packages to local NuGet repository: {0}", localRepoDirectory);
+
+            Debug("Packages: {0}", string.Join(", ", packages));
+
+            foreach(var packagePath in packages) {
+                Debug("Pushing package {0}", packagePath);
+                var targetPackageName = project.Name;
+                var targetPackageVersion = version.SemVer;
+
+                var targetDirectory = localRepoDirectory.Combine(targetPackageName).Combine(targetPackageVersion);
+                EnsureDirectoryDoesNotExist(targetDirectory);
+
+                DotNetNuGetPush(packagePath, new DotNetNuGetPushSettings {
+                    Source = localRepoDirectory.ToString()
+                });
+            }
+        }
     }).IsDependentOn(project.Task("build"));
 
     mainPackTask.IsDependentOn(task);
