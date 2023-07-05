@@ -23,18 +23,37 @@ public class AclAuthenticationService : IAclAuthenticationService
 
     public async ValueTask<AclAuthenticationResult> AuthenticateAsync(TokenRequest request)
     {
+        Logger.LogDebug("Authenticating request {Id}", request.Id);
+
+        Logger.LogDebug(
+            "Has Basic credentials: {HasBasicCredentials}\nHas refresh token: {HasRefreshToken}\nHas connection credentials: {HasConnectionCredentials}",
+            request.BasicCredentials.HasValue,
+            request.RefreshTokenCredentials.HasValue,
+            request.ConnectionCredentials.HasValue
+        );
+
         IEnumerable<AclAuthenticationScheme> availableSchemes =
-            await AuthenticationSchemeProvider.GetSchemesForRequestAsync(request);
+            (await AuthenticationSchemeProvider.GetSchemesForRequestAsync(request)).ToArray();
+
+        Logger.LogDebug(
+            "Authentication schemes: {AuthenticationSchemeList}",
+            availableSchemes.Select(scheme => scheme.DisplayName ?? scheme.Name)
+        );
 
         foreach (AclAuthenticationScheme scheme in availableSchemes)
         {
             IAclAuthenticationHandler handler = await AuthenticationHandlerProvider.GetHandlerAsync(scheme);
             await handler.InitializeAsync(scheme);
 
+            Logger.LogDebug("Initialized handler {HandlerType}", handler.GetType().Name);
+
             AclAuthenticationResult result = await handler.AuthenticateAsync(request);
+
+            Logger.LogDebug("Result: {IsResultSuccessful}", result.IsSuccessful);
 
             if (result.IsSuccessful)
             {
+                Logger.LogDebug("User: {User}", result.User.Username);
                 return result;
             }
         }
