@@ -36,7 +36,7 @@ foreach (var project in from p in projects where !p.IsTest select p) {
         }
 
         if(args.Configuration is "Debug" && !args.NoCopyArtifacts) {
-            var sourceDirectory = project.Directory.Combine("bin/Release");
+            var sourceDirectory = project.Directory.Combine("bin/Debug");
             var packageGlobPattern = sourceDirectory.Combine($"{project.Name}.{version.SemVer}.nupkg").ToString();
             Debug("Glob pattern: {0}", packageGlobPattern);
             var packages = GetFiles(packageGlobPattern);
