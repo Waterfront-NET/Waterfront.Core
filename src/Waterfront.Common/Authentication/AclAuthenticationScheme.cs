@@ -9,7 +9,7 @@ public class AclAuthenticationScheme
     public string[] ClientIds { get; }
 
     public bool AllowsAnyService => Services.Length == 0;
-    public bool RequireClientId => ClientIds.Length != 0;
+    public bool RequiresClientId => ClientIds.Length != 0;
 
     public AclAuthenticationScheme(
         string name,

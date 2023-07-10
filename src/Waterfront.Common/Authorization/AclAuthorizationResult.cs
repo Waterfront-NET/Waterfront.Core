@@ -4,12 +4,16 @@ namespace Waterfront.Common.Authorization;
 
 public readonly struct AclAuthorizationResult
 {
-    public bool IsSuccessful => !ForbiddenScopes.Any();
     public string Id { get; init; }
-    public ICollection<TokenRequestScope> AuthorizedScopes { get; init; }
-    public ICollection<TokenRequestScope> ForbiddenScopes { get; init; }
+    public IReadOnlyList<TokenRequestScope> ForbiddenScopes { get; }
+    public IReadOnlyList<TokenRequestScope> AuthorizedScopes { get; }
+    public bool IsSuccessful => ForbiddenScopes.Count == 0;
 
-    public AclAuthorizationResult(string id)
+    public AclAuthorizationResult(
+        string id,
+        IEnumerable<TokenRequestScope>? forbiddenScopes = null,
+        IEnumerable<TokenRequestScope>? authorizedScopes = null
+    )
     {
         if (string.IsNullOrEmpty(id))
         {
@@ -17,9 +21,7 @@ public readonly struct AclAuthorizationResult
         }
 
         Id = id;
-        AuthorizedScopes = new List<TokenRequestScope>();
-        ForbiddenScopes = new List<TokenRequestScope>();
+        ForbiddenScopes = forbiddenScopes?.ToArray() ?? Array.Empty<TokenRequestScope>();
+        AuthorizedScopes = authorizedScopes?.ToArray() ?? Array.Empty<TokenRequestScope>();
     }
-
-    public AclAuthorizationResult(TokenRequest request) : this(request.Id) { }
 }

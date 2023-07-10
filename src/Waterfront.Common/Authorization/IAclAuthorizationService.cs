@@ -15,7 +15,6 @@ public interface IAclAuthorizationService
     /// <returns>Operation result</returns>
     ValueTask<AclAuthorizationResult> AuthorizeAsync(
         TokenRequest request,
-        AclAuthenticationResult authnResult,
-        AclAuthorizationResult authzResult
+        AclAuthenticationResult authnResult
     );
 }

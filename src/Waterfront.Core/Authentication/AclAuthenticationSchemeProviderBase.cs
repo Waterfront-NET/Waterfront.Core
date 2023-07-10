@@ -9,10 +9,10 @@ public abstract class AclAuthenticationSchemeProviderBase : IAclAuthenticationSc
     public abstract IReadOnlyDictionary<string, AclAuthenticationScheme> SchemeMap { get; }
 
     public virtual Task<IEnumerable<AclAuthenticationScheme>>
-    GetSchemesForRequestAsync(TokenRequest request) => Task.FromResult(
+    GetSchemesAsync(TokenRequest request) => Task.FromResult(
         Schemes.Where(
             scheme => (scheme.AllowsAnyService || scheme.Services.Contains(request.Service)) &&
-                      (!scheme.RequireClientId ||
+                      (!scheme.RequiresClientId ||
                        (request.ClientId != null && scheme.ClientIds.Contains(request.ClientId)))
         )
     );

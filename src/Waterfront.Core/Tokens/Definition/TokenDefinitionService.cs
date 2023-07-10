@@ -54,7 +54,7 @@ public class TokenDefinitionService : ITokenDefinitionService
             IssuedAt  = issuedAt,
             ExpiresAt = expiresAt,
             Access =
-            authorizationResult.AuthorizedScopes
+            authorizationResult.AuthorizedScopes.ToArray()
         };
 
         return definition;

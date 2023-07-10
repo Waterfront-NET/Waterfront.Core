@@ -29,11 +29,17 @@ public readonly struct TokenResponse
     /// </summary>
     public string? RefreshToken { get; init; }
 
-    public static TokenResponse Create(TokenDefinition definition, string token, string? refreshToken) =>
+    public static TokenResponse Create(
+        TokenDefinition definition,
+        string token,
+        string? issuedAt = null,
+        int? expiresIn = null,
+        string? refreshToken = null
+    ) =>
         new TokenResponse {
             Token = token,
-            IssuedAt = definition.IssuedAt.UtcDateTime.ToString("O"),
-            ExpiresIn = definition.LifetimeSeconds(),
+            IssuedAt = issuedAt ?? definition.IssuedAt.UtcDateTime.ToString("O"),
+            ExpiresIn = expiresIn ?? definition.LifetimeSeconds(),
             RefreshToken = refreshToken
         };
 }

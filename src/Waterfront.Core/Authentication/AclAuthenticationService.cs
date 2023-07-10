@@ -33,7 +33,7 @@ public class AclAuthenticationService : IAclAuthenticationService
         );
 
         IEnumerable<AclAuthenticationScheme> availableSchemes =
-            (await AuthenticationSchemeProvider.GetSchemesForRequestAsync(request)).ToArray();
+            (await AuthenticationSchemeProvider.GetSchemesAsync(request)).ToArray();
 
         Logger.LogDebug(
             "Authentication schemes: {AuthenticationSchemeList}",

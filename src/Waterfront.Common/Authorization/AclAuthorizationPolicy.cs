@@ -1,16 +1,20 @@
-﻿using System.Diagnostics;
+﻿namespace Waterfront.Common.Authorization;
 
-namespace Waterfront.Common.Authorization;
-
-[DebuggerDisplay("AclAuthorizationPolicy({Name}:{DisplayName})")]
 public class AclAuthorizationPolicy
 {
     public string Name { get; }
     public string? DisplayName { get; }
+    public Type HandlerType { get; }
 
-    public AclAuthorizationPolicy(string name, string? displayName = null)
+    public AclAuthorizationPolicy(string name, string? displayName, Type handlerType)
     {
-        Name        = name;
+        Name = name;
         DisplayName = displayName;
+        HandlerType = handlerType.IsAssignableTo(typeof(IAclAuthorizationHandler))
+            ? handlerType
+            : throw new ArgumentException(
+                "Invalid handler type: Handler must implement " + nameof(IAclAuthorizationHandler),
+                nameof(handlerType)
+            );
     }
 }
