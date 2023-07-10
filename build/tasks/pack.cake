@@ -35,29 +35,23 @@ foreach (var project in from p in projects where !p.IsTest select p) {
             });
         }
 
-        if(args.Configuration is "Debug" && !args.NoCopyArtifacts) {
-            var sourceDirectory = project.Directory.Combine("bin/Debug");
-            var packageGlobPattern = sourceDirectory.Combine($"{project.Name}.{version.SemVer}.nupkg").ToString();
-            Debug("Glob pattern: {0}", packageGlobPattern);
-            var packages = GetFiles(packageGlobPattern);
-            var localRepoDirectory = DirectoryPath.FromString(EnvironmentVariable("USERPROFILE")).Combine(".nuget/packages");
+        if(args.Configuration is "Debug" && !args.NoLocalPush) {
+            var packagePath = project.PackagePath(args.Configuration, version.SemVer);
+            var localRepoPath = DirectoryPath.FromString(EnvironmentVariable("USERPROFILE")).Combine(".nuget/packages");
+            Verbose(
+                "Pushing debug version of package {0} ({1}) to local repository - {2}",
+                project.Name,
+                packagePath,
+                localRepoPath
+            );
 
-            Verbose("Pushing debug version of packages to local NuGet repository: {0}", localRepoDirectory);
+            var targetDirectoryPath = localRepoPath.Combine(project.Name.ToLowerInvariant()).Combine(version.SemVer);
 
-            Debug("Packages: {0}", string.Join(", ", packages));
+            EnsureDirectoryDoesNotExist(targetDirectoryPath);
 
-            foreach(var packagePath in packages) {
-                Debug("Pushing package {0}", packagePath);
-                var targetPackageName = project.Name;
-                var targetPackageVersion = version.SemVer;
-
-                var targetDirectory = localRepoDirectory.Combine(targetPackageName).Combine(targetPackageVersion);
-                EnsureDirectoryDoesNotExist(targetDirectory);
-
-                DotNetNuGetPush(packagePath, new DotNetNuGetPushSettings {
-                    Source = localRepoDirectory.ToString()
-                });
-            }
+            DotNetNuGetPush(packagePath, new DotNetNuGetPushSettings {
+                Source = localRepoPath.ToString()
+            });
         }
     }).IsDependentOn(project.Task("build"));
 

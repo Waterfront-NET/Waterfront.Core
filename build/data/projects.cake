@@ -2,28 +2,7 @@
 #load paths.cake
 #load args.cake
 
-using System.Xml;
-
 static List<BuildProject> projects;
-
-/* projects = new List<BuildProject> {
-    new BuildProject {
-        Name = "Waterfront.Common",
-        Path = paths.Source().CombineWithFilePath("Waterfront.Common/Waterfront.Common.csproj")
-    },
-    new BuildProject {
-        Name = "Waterfront.Core",
-        Path = paths.Source().CombineWithFilePath("Waterfront.Core/Waterfront.Core.csproj")
-    },
-    new BuildProject {
-        Name = "Waterfront.Common.Tests",
-        Path = paths.Tests().CombineWithFilePath("Waterfront.Common.Tests/Waterfront.Common.Tests.csproj"),
-    },
-    new BuildProject {
-        Name = "Waterfront.Core.Tests",
-        Path = paths.Tests().CombineWithFilePath("Waterfront.Core.Tests/Waterfront.Core.Tests.csproj"),
-    }
-}; */
 
 projects = ParseSolution(paths.Solution).GetProjects()
 .Where(solutionProject => solutionProject.IsType(ProjectType.CSharp))
@@ -67,11 +46,23 @@ class BuildProject {
         return $":{Shortname}:{task}";
     }
 
+    public DirectoryPath PackagesOutputPath(string configuration) {
+        return Directory.Combine("bin").Combine(configuration);
+    }
+
     public FilePath PackagePath(string configuration, string version) {
-        return Directory.CombineWithFilePath($"bin/{configuration}/{Name}.{version}.nupkg");
+        return PackagesOutputPath(configuration).CombineWithFilePath(PackageName(version));
     }
 
     public FilePath SymbolPackagePath(string configuration, string version) {
-        return Directory.CombineWithFilePath($"bin/{configuration}/{Name}.{version}.snupkg");
+        return PackagesOutputPath(configuration).CombineWithFilePath(SymbolPackageName(version));
+    }
+
+    private string PackageName(string version) {
+        return Name + '.' + version + ".nupkg";
+    }
+
+    private string SymbolPackageName(string version) {
+        return Name + '.' + version + ".snupkg";
     }
 }
