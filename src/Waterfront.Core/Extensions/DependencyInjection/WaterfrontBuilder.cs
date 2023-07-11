@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Configuration;
 using Waterfront.Common.Tokens.Configuration;
@@ -16,7 +17,7 @@ internal class WaterfrontBuilder : IWaterfrontBuilder
 
     public IWaterfrontBuilder AddServiceOptionsProvider<T>() where T : class, new()
     {
-        Services.AddSingleton<IServiceOptionsProvider<T>>();
+        Services.TryAddSingleton<IServiceOptionsProvider<T>>();
 
         return this;
     }
@@ -24,7 +25,8 @@ internal class WaterfrontBuilder : IWaterfrontBuilder
     public IWaterfrontBuilder ConfigureServiceOptions<T>(Action<ServiceOptions<T>> configure)
     where T : class, new()
     {
-        Services.AddSingleton<IConfigureOptions<ServiceOptions<T>>>(
+        AddServiceOptionsProvider<T>()
+        .Services.AddSingleton<IConfigureOptions<ServiceOptions<T>>>(
             new ConfigureOptions<ServiceOptions<T>>(configure)
         );
 
