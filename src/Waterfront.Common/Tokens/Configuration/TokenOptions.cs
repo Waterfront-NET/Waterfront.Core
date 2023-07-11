@@ -1,4 +1,4 @@
-﻿namespace Waterfront.Core.Configuration.Tokens;
+﻿namespace Waterfront.Common.Tokens.Configuration;
 
 public class TokenOptions
 {

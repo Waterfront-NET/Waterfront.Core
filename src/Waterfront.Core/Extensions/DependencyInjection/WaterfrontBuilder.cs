@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Waterfront.Common.Tokens.Definition;
-using Waterfront.Core.Configuration.Tokens;
-using Waterfront.Core.Tokens.Definition;
+using Microsoft.Extensions.Options;
+using Waterfront.Common.Configuration;
+using Waterfront.Common.Tokens.Configuration;
 
 namespace Waterfront.Core.Extensions.DependencyInjection;
 
@@ -15,30 +14,33 @@ internal class WaterfrontBuilder : IWaterfrontBuilder
         Services = services;
     }
 
-    public IWaterfrontBuilder WithTokenOptionsProvider<T>(ServiceLifetime lifetim = ServiceLifetime.Singleton)
-        where T : class, ITokenOptionsProvider
+    public IWaterfrontBuilder AddServiceOptionsProvider<T>() where T : class, new()
     {
+        Services.AddSingleton<IServiceOptionsProvider<T>>();
 
-    }
-
-    public IWaterfrontBuilder WithTokenDefinitionService<T>(ServiceLifetime lifetime = ServiceLifetime.Singleton) where T : class, ITokenDefinitionService
-    {
-        var descriptor = ServiceDescriptor.Describe(typeof(ITokenDefinitionService), typeof(T), lifetime);
-        Services.RemoveAll<ITokenDefinitionService>();
-        Services.Add(descriptor);
         return this;
     }
 
-    public IWaterfrontBuilder WithDefaultTokenDefinitionService()
+    public IWaterfrontBuilder ConfigureServiceOptions<T>(Action<ServiceOptions<T>> configure)
+    where T : class, new()
     {
-        return WithTokenDefinitionService<TokenDefinitionService>();
-    }
-}
+        Services.AddSingleton<IConfigureOptions<ServiceOptions<T>>>(
+            new ConfigureOptions<ServiceOptions<T>>(configure)
+        );
 
-public static class ServiceCollectionExtensions
-{
-    public static IWaterfrontBuilder AddWaterfront(this IServiceCollection services)
+        return this;
+    }
+
+    public IWaterfrontBuilder ConfigureServiceOptions<T>(string servicePattern, Action<T> configure)
+    where T : class, new()
     {
-        return new WaterfrontBuilder(services);
+        return ConfigureServiceOptions<T>(
+            serviceOpt => serviceOpt.Configure(servicePattern, configure)
+        );
+    }
+
+    public IWaterfrontBuilder ConfigureServiceOptions<T>(Action<T> configure) where T : class, new()
+    {
+        return ConfigureServiceOptions<T>(serviceOpt => serviceOpt.Configure(configure));
     }
 }

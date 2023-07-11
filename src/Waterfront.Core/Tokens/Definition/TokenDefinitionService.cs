@@ -1,20 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
 using Waterfront.Common.Authentication;
 using Waterfront.Common.Authorization;
+using Waterfront.Common.Configuration;
+using Waterfront.Common.Tokens.Configuration;
 using Waterfront.Common.Tokens.Definition;
 using Waterfront.Common.Tokens.Requests;
-using Waterfront.Core.Configuration.Tokens;
+using Waterfront.Core.Extensions.DependencyInjection;
 
 namespace Waterfront.Core.Tokens.Definition;
 
 public class TokenDefinitionService : ITokenDefinitionService
 {
     protected ILogger Logger { get; }
-    protected ITokenOptionsProvider TokenOptionsProvider { get; }
+    protected IServiceOptionsProvider<TokenOptions> TokenOptionsProvider { get; }
 
     public TokenDefinitionService(
         ILoggerFactory loggerFactory,
-        ITokenOptionsProvider tokenOptionsProvider
+        IServiceOptionsProvider<TokenOptions> tokenOptionsProvider
     )
     {
         Logger               = loggerFactory.CreateLogger(GetType());
@@ -27,9 +29,9 @@ public class TokenDefinitionService : ITokenDefinitionService
         AclAuthorizationResult authorizationResult
     )
     {
-        TokenOptions   options   = await TokenOptionsProvider.GetTokenOptionsAsync(request);
-        DateTimeOffset issuedAt  = await GetIssuedAtAsync(request);
-        DateTimeOffset expiresAt = await GetExpiresAtAsync(request, issuedAt);
+        TokenOptions   options   = TokenOptionsProvider.Get(request.Service);
+        DateTimeOffset issuedAt  = DateTimeOffset.Now;
+        DateTimeOffset expiresAt = issuedAt.Add(options.Lifetime);
 
         if ( !authenticationResult.IsSuccessful )
         {
@@ -46,25 +48,15 @@ public class TokenDefinitionService : ITokenDefinitionService
         }
 
         TokenDefinition definition = new TokenDefinition {
-            Id = request.Id,
-            Subject =
-            authenticationResult.User.Username,
+            Id        = request.Id,
+            Subject   = authenticationResult.User.Username,
             Issuer    = options.Issuer,
             Service   = request.Service,
             IssuedAt  = issuedAt,
             ExpiresAt = expiresAt,
-            Access =
-            authorizationResult.AuthorizedScopes.ToArray()
+            Access    = authorizationResult.AuthorizedScopes.ToArray()
         };
 
         return definition;
     }
-
-    protected virtual ValueTask<DateTimeOffset> GetIssuedAtAsync(TokenRequest request) =>
-    ValueTask.FromResult(DateTimeOffset.Now);
-
-    protected virtual async ValueTask<DateTimeOffset> GetExpiresAtAsync(
-        TokenRequest request,
-        DateTimeOffset issuedAt
-    ) => issuedAt.Add((await TokenOptionsProvider.GetTokenOptionsAsync(request)).Lifetime);
 }

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Waterfront.Common.Tokens.Definition;
 using Waterfront.Common.Tokens.Encoding;
 using Waterfront.Common.Tokens.Signing.CertificateProviders;
-using Waterfront.Core.Configuration.Tokens;
 using Waterfront.Core.Extensions.Cryptography;
 using Waterfront.Core.Serialization.Tokens;
 
