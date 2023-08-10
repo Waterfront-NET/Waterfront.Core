@@ -1,4 +1,5 @@
-﻿using DotNet.Globbing;
+﻿using System.Collections.Specialized;
+using DotNet.Globbing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Waterfront.Common.Configuration;
@@ -14,6 +15,8 @@ internal class ServiceOptionsProvider<T> : IServiceOptionsProvider<T> where T : 
     private readonly ILogger<ServiceOptionsProvider<T>> _logger;
     private readonly IReadOnlyDictionary<Glob, T>       _optionsMap;
     private readonly Dictionary<string, T>              _cachedMatchOptionsMap;
+    private readonly int                                _maxCacheSz;
+    private readonly OrderedDictionary                  _cache;
 
     public ServiceOptionsProvider(
         ILogger<ServiceOptionsProvider<T>> logger,
@@ -52,5 +55,32 @@ internal class ServiceOptionsProvider<T> : IServiceOptionsProvider<T> where T : 
         }
 
         return options;
+    }
+
+    private bool TryGetCachedValue(string service, out T? value)
+    {
+        if ( !_cache.Contains(service) )
+        {
+            value = default;
+            return false;
+        }
+
+        value = (T) _cache[service]!;
+        return true;
+    }
+
+    private T CacheValue(string service, T value)
+    {
+        _cache[service] = value;
+        EnsureMaxCacheSize();
+        return value;
+    }
+
+    private void EnsureMaxCacheSize()
+    {
+        while ( _cache.Count > _maxCacheSz )
+        {
+            _cache.RemoveAt(0);
+        }
     }
 }
